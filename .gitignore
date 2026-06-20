@@ -12,6 +12,7 @@ out/
 .env.local
 .env.*.local
 .env.production
+env
 
 # Prisma local DB
 db/
@@ -35,3 +36,12 @@ Thumbs.db
 
 # Uploads (user files)
 upload/Новий документ
+
+# Old git folder
+git/
+
+# Images uploaded by user
+*.png
+*.jpg
+*.jpeg
+*.gif
