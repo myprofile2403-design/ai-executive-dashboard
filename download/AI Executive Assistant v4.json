@@ -1,0 +1,655 @@
+{
+  "name": "AI Executive Assistant v4",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -380,
+        180
+      ],
+      "webhookId": "telegram-webhook-1",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_api",
+          "name": "Telegram API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.voice.file_id }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Voice"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "switch",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -180,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.voice.file_id }}"
+      },
+      "id": "download-file",
+      "name": "Download File",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "telegram-webhook-2",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_api",
+          "name": "Telegram API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.WHISPER_SERVER_URL || 'http://localhost:8000'}}/transcribe",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "parameterType": "form-data-binary",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "local-whisper",
+      "name": "Local Whisper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        200,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "source_type",
+              "value": "voice",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-transcript",
+      "name": "Set Transcript",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "text",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "source_type",
+              "value": "text",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "set-text",
+      "name": "Set Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        280
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "openai/gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "openai/gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        280,
+        400
+      ],
+      "id": "openai-chat-model",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "openrouter_api",
+          "name": "OpenRouter API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        440,
+        400
+      ],
+      "id": "window-buffer-memory",
+      "name": "Window Buffer Memory"
+    },
+    {
+      "parameters": {
+        "name": "save_event",
+        "description": "Save an event to the database. ALWAYS use this for every user message. Types: expense (purchase/spending), task (something to do), meeting (scheduled call/meeting), reminder (remind at specific time), note (thought/idea).",
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/events",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.SUPABASE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ type: $json.type, title: $json.title, amount: $json.amount || null, currency: $json.currency || null, person: $json.person || null, project: $json.project || null, event_datetime: $json.event_datetime || null, due_datetime: $json.due_datetime || null, status: $json.status || 'open', metadata: {}, raw_text: $json.raw_text, transcript: $json.raw_text, telegram_chat_id: String($('Telegram Trigger').item.json.message.chat.id), telegram_message_id: String($('Telegram Trigger').item.json.message.message_id), audio_file_id: null, source: 'telegram', source_type: $('Set Text').first().json.source_type || $('Set Transcript').first().json.source_type || 'text' }) }}",
+        "schema": "{\"type\": \"object\", \"properties\": {\"type\": {\"type\": \"string\", \"enum\": [\"expense\", \"task\", \"meeting\", \"reminder\", \"note\"], \"description\": \"Type of event\"}, \"title\": {\"type\": \"string\", \"description\": \"Short title\"}, \"amount\": {\"type\": \"number\", \"description\": \"Amount (only for expenses)\"}, \"currency\": {\"type\": \"string\", \"enum\": [\"UAH\", \"USD\", \"EUR\"], \"description\": \"Currency code\"}, \"person\": {\"type\": \"string\", \"description\": \"Person name\"}, \"project\": {\"type\": \"string\", \"description\": \"Project name\"}, \"event_datetime\": {\"type\": \"string\", \"description\": \"Event date/time ISO 8601\"}, \"due_datetime\": {\"type\": \"string\", \"description\": \"Due date/time ISO 8601\"}, \"status\": {\"type\": \"string\", \"enum\": [\"open\", \"done\", \"scheduled\"], \"description\": \"Status\"}, \"raw_text\": {\"type\": \"string\", \"description\": \"Original user message\"}}, \"required\": [\"type\", \"title\", \"raw_text\"]}",
+        "options": {}
+      },
+      "id": "tool-save-event",
+      "name": "Save Event",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "name": "query_events",
+        "description": "Query events from the database. Use this when the user asks to see their expenses, tasks, meetings, reminders, notes, or wants a summary/report.",
+        "method": "GET",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/events?select=id,type,title,amount,currency,person,project,event_datetime,due_datetime,status,created_at&order=created_at.desc&limit=20&type=eq.{{$json.filter_type}}&status=eq.{{$json.filter_status}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.SUPABASE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+            }
+          ]
+        },
+        "options": {},
+        "schema": "{\"type\": \"object\", \"properties\": {\"filter_type\": {\"type\": \"string\", \"enum\": [\"expense\", \"task\", \"meeting\", \"reminder\", \"note\", \"\"], \"description\": \"Filter by type. Empty = all\"}, \"filter_status\": {\"type\": \"string\", \"enum\": [\"open\", \"done\", \"scheduled\", \"\"], \"description\": \"Filter by status. Empty = all\"}}, \"required\": []}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "filter_type",
+              "description": "Event type filter (expense, task, meeting, reminder, note, or empty for all)",
+              "type": "string"
+            },
+            {
+              "name": "filter_status",
+              "description": "Status filter (open, done, scheduled, or empty for all)",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "tool-query-events",
+      "name": "Query Events",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        740
+      ]
+    },
+    {
+      "parameters": {
+        "name": "calendarAgent",
+        "description": "Call this tool for any calendar action: create events, get schedule, delete events, update events, set reminders.",
+        "workflowId": {
+          "__rl": true,
+          "value": "CALENDAR_WORKFLOW_ID",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2,
+      "position": [
+        620,
+        520
+      ],
+      "id": "calendar-agent-tool",
+      "name": "Calendar Agent"
+    },
+    {
+      "parameters": {
+        "name": "tavily_search",
+        "description": "Use this tool to search the internet for information.",
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ api_key: $env.TAVILY_API_KEY, query: $json.searchTerm, search_depth: 'basic', include_answer: true, topic: 'news', include_raw_content: true, max_results: 3 }) }}",
+        "placeholderDefinitions": {
+          "values": [
+            {
+              "name": "searchTerm",
+              "description": "What the user has requested to search the internet for",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        520
+      ],
+      "id": "tavily",
+      "name": "Tavily"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        620,
+        660
+      ],
+      "id": "calculator",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=# Опис\nТи AI executive assistant — персональний бізнес-асистент.\n\n## Інструменти\n- **save_event** — Зберігає подію в БД. ОБОВ'ЯЗКОВО для кожного нового повідомлення.\n- **query_events** — Шукає події в БД. Використовуй коли користувач запитує свої записи.\n- **calendarAgent** — Google Calendar: створення, перегляд, зміна, видалення подій.\n- **tavily_search** — Пошук в інтернеті.\n- **Calculator** — Калькулятор.\n\n## Правила\n1. Нове повідомлення → save_event\n2. Є дата/час → ще й calendarAgent\n3. Запит про свої записи → query_events\n4. Нагадування → save_event + calendarAgent\n5. Відповідай українською, коротко\n6. Для витрат підраховуй загальну суму\n\n## Кнопки\nКористувач натискає кнопки:\n- «Що сьогодні?» → query_events\n- «Витрати» → query_events(filter_type=\"expense\")\n- «Задачі» → query_events(filter_type=\"task\", filter_status=\"open\")\n- «Нотатки» → query_events(filter_type=\"note\")\n- «Скільки витратив?» → query_events(filter_type=\"expense\") + сума\n- «Календар завтра» → calendarAgent(get events tomorrow)\n- «Все» → query_events\n\n## Час\n{{ $now }}",
+          "temperature": 0.1
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        320,
+        200
+      ],
+      "id": "ai-agent",
+      "name": "БІЗНЕС АСИСТЕНТ"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "replyMarkup": "replyKeyboard",
+          "replyKeyboardParameters": {
+            "keyboard": {
+              "rows": [
+                {
+                  "buttons": {
+                    "values": [
+                      {
+                        "text": "➕ Що сьогодні?"
+                      },
+                      {
+                        "text": "💰 Витрати"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "buttons": {
+                    "values": [
+                      {
+                        "text": "✅ Задачі"
+                      },
+                      {
+                        "text": "📝 Нотатки"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "buttons": {
+                    "values": [
+                      {
+                        "text": "🧮 Скільки витратив?"
+                      },
+                      {
+                        "text": "📅 Календар завтра"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "buttons": {
+                    "values": [
+                      {
+                        "text": "📊 Все"
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            "resizeKeyboard": true,
+            "oneTimeKeyboard": false
+          }
+        }
+      },
+      "id": "response",
+      "name": "Response",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        200
+      ],
+      "webhookId": "telegram-webhook-3",
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_api",
+          "name": "Telegram API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Local Whisper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local Whisper": {
+      "main": [
+        [
+          {
+            "node": "Set Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Transcript": {
+      "main": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Text": {
+      "main": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "БІЗНЕС АСИСТЕНТ": {
+      "main": [
+        [
+          {
+            "node": "Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Events": {
+      "ai_tool": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "БІЗНЕС АСИСТЕНТ",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}

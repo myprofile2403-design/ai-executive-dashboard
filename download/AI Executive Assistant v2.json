@@ -1,0 +1,477 @@
+{
+  "name": "AI Executive Assistant v2",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ]
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        200,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_api",
+          "name": "Telegram API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const update = $input.first().json;\nconst msg = update.message || {};\n\nconst text = msg.text || '';\nconst hasVoice = !!msg.voice;\n\nif (!text && !hasVoice) {\n  return [];\n}\n\nreturn [{\n  json: {\n    telegram_chat_id: String(msg.chat?.id || ''),\n    telegram_message_id: String(msg.message_id || ''),\n    text: text,\n    raw_text: text,\n    source_type: hasVoice ? 'voice' : 'text',\n    has_voice: hasVoice,\n    voice_file_id: msg.voice?.file_id || null\n  }\n}];"
+      },
+      "id": "extract-message",
+      "name": "Extract Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.has_voice }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            }
+          ]
+        }
+      },
+      "id": "if-voice",
+      "name": "Is Voice?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/getFile?file_id={{$json.voice_file_id}}",
+        "responseFormat": "json",
+        "options": {}
+      },
+      "id": "get-file-info",
+      "name": "Get File Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        950,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://api.telegram.org/file/bot{{$env.TELEGRAM_BOT_TOKEN}}/{{$json.result.file_path}}",
+        "responseFormat": "file",
+        "options": {}
+      },
+      "id": "download-audio",
+      "name": "Download Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1200,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.WHISPER_SERVER_URL || 'http://localhost:8000'}}/transcribe",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "parameterType": "form-data-binary",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "local-whisper",
+      "name": "Local Whisper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [
+        1450,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const whisperResponse = $json;\nconst original = $('Is Voice?').first().json;\n\nreturn [{\n  json: {\n    telegram_chat_id: original.telegram_chat_id,\n    telegram_message_id: original.telegram_message_id,\n    text: original.text,\n    raw_text: whisperResponse.text || '',\n    source_type: 'voice',\n    has_voice: true,\n    voice_file_id: original.voice_file_id,\n    transcript: whisperResponse.text || ''\n  }\n}];"
+      },
+      "id": "set-voice-transcript",
+      "name": "Set Voice Transcript",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1700,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return [{ json: { ...$json, transcript: $json.text } }];"
+      },
+      "id": "text-mode",
+      "name": "Text Mode",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        950,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nconst transcript = data.transcript || data.text || '';\n\nif (!transcript) {\n  return [];\n}\n\nreturn [{\n  json: {\n    message: transcript,\n    telegram_chat_id: data.telegram_chat_id,\n    telegram_message_id: data.telegram_message_id,\n    source_type: data.source_type || 'text',\n    voice_file_id: data.voice_file_id || null,\n    raw_text: data.raw_text || transcript\n  }\n}];"
+      },
+      "id": "prepare-agent-input",
+      "name": "Prepare Agent Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1950,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.message }}",
+        "options": {
+          "systemMessage": "Ти AI executive assistant. Ти допомагаєш керувати витратами, задачами, зустрічами, нагадуваннями та нотатками.\n\nАналізуй повідомлення користувача і викликай відповідні інструменти.\n\nДОСТУПНІ ІНСТРУМЕНТИ:\n\n1. save_event — зберігає подію в базу даних\n   Типи подій:\n   - expense (витрата) — коли хтось щось купив або витратив гроші\n   - task (завдання) — коли є щось зробити\n   - meeting (зустріч) — коли запланована зустріч або дзвінок\n   - reminder (нагадування) — коли треба нагадати щось у певний час\n   - note (нотатка) — просто запис, думка, ідея\n   Використовуй ОБОВ'ЯЗКОВО для КОЖНОГО повідомлення.\n\n2. create_calendar_event — створює подію в Google Calendar з нагадуванням\n   Використовуй коли є конкретна дата/час:\n   - зустріч (meeting)\n   - нагадування (reminder)\n   - завдання з дедлайном (task з due_datetime)\n\nПРАВИЛА:\n1. ЗАВЖДИ викликай save_event першим\n2. Якщо є конкретна дата/час — також викликай create_calendar_event\n3. Витрати без дати — тільки save_event\n4. Нотатки — тільки save_event\n5. Якщо сума в грн — currency: \"UAH\", в USD — \"USD\", в EUR — \"EUR\"\n6. Якщо не вказано статус — став \"open\" для задач/витрат, \"scheduled\" для зустрічей\n7. Для нагадувань став type: \"reminder\" і ОБОВ'ЯЗКОВО create_calendar_event\n8. Завжди передавай raw_text — оригінальний текст повідомлення\n9. Відповідай коротко українською мовою після виклику інструментів\n10. Якщо повідомлення неоднозначне — зроби найкраще припущення і збережи",
+          "temperature": 0.1
+        }
+      },
+      "id": "ai-agent",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        2200,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {
+          "baseURL": "https://openrouter.ai/api/v1",
+          "temperature": 0.1
+        }
+      },
+      "id": "openai-chat-model",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.5,
+      "position": [
+        2200,
+        100
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "openrouter_api",
+          "name": "OpenRouter API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "save_event",
+        "description": "Зберігає подію в базу даних. Використовуй ОБОВ'ЯЗКОВО для кожного повідомлення. Типи: expense (витрата), task (завдання), meeting (зустріч), reminder (нагадування), note (нотатка).",
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL}}/rest/v1/events",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.SUPABASE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ type: $json.type, title: $json.title, amount: $json.amount || null, currency: $json.currency || null, person: $json.person || null, project: $json.project || null, event_datetime: $json.event_datetime || null, due_datetime: $json.due_datetime || null, status: $json.status || 'open', metadata: {}, raw_text: $json.raw_text, transcript: $json.raw_text, telegram_chat_id: $('Prepare Agent Input').first().json.telegram_chat_id, telegram_message_id: $('Prepare Agent Input').first().json.telegram_message_id, audio_file_id: $('Prepare Agent Input').first().json.voice_file_id || null, source: 'telegram', source_type: $('Prepare Agent Input').first().json.source_type }) }}",
+        "schema": "{\"type\": \"object\", \"properties\": {\"type\": {\"type\": \"string\", \"enum\": [\"expense\", \"task\", \"meeting\", \"reminder\", \"note\"], \"description\": \"Тип події: expense (витрата), task (завдання), meeting (зустріч), reminder (нагадування), note (нотатка)\"}, \"title\": {\"type\": \"string\", \"description\": \"Коротка назва або опис події\"}, \"amount\": {\"type\": \"number\", \"description\": \"Сума (тільки для витрат, інакше null)\"}, \"currency\": {\"type\": \"string\", \"enum\": [\"UAH\", \"USD\", \"EUR\"], \"description\": \"Валюта\"}, \"person\": {\"type\": \"string\", \"description\": \"Ім'я персони (якщо згадується)\"}, \"project\": {\"type\": \"string\", \"description\": \"Назва проєкту (якщо згадується)\"}, \"event_datetime\": {\"type\": \"string\", \"description\": \"Дата/час події в ISO 8601 (для зустрічей)\"}, \"due_datetime\": {\"type\": \"string\", \"description\": \"Дедлайн в ISO 8601 (для завдань)\"}, \"status\": {\"type\": \"string\", \"enum\": [\"open\", \"done\", \"scheduled\"], \"description\": \"Статус: open, done, scheduled\"}, \"raw_text\": {\"type\": \"string\", \"description\": \"Оригінальний текст повідомлення користувача\"}}, \"required\": [\"type\", \"title\", \"raw_text\"]}",
+        "options": {}
+      },
+      "id": "tool-save-event",
+      "name": "Tool: Save Event",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        500
+      ]
+    },
+    {
+      "parameters": {
+        "name": "create_calendar_event",
+        "description": "Створює подію в Google Calendar з нагадуванням. Використовуй для зустрічей, нагадувань і завдань з дедлайном. Автоматично ставить нагадування за 30 і 10 хвилин.",
+        "method": "POST",
+        "url": "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ summary: $json.summary, description: $json.description || '', start: { dateTime: $json.start_datetime, timeZone: 'Europe/Kyiv' }, end: { dateTime: $json.end_datetime || $json.start_datetime, timeZone: 'Europe/Kyiv' }, reminders: { useDefault: false, overrides: [{ method: 'popup', minutes: 30 }, { method: 'popup', minutes: 10 }] } }) }}",
+        "schema": "{\"type\": \"object\", \"properties\": {\"summary\": {\"type\": \"string\", \"description\": \"Назва події в календарі\"}, \"description\": {\"type\": \"string\", \"description\": \"Опис події (опціонально)\"}, \"start_datetime\": {\"type\": \"string\", \"description\": \"Початок події в ISO 8601 (напр. 2025-06-16T15:00:00+03:00)\"}, \"end_datetime\": {\"type\": \"string\", \"description\": \"Кінець події в ISO 8601 (опціонально, за замовчуванням +1 година)\"}}, \"required\": [\"summary\", \"start_datetime\"]}",
+        "options": {}
+      },
+      "id": "tool-calendar",
+      "name": "Tool: Calendar Event",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1,
+      "position": [
+        2400,
+        500
+      ],
+      "credentials": {
+        "oAuth2Api": {
+          "id": "google_oauth2",
+          "name": "Google OAuth2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOutput = $json;\nconst original = $('Prepare Agent Input').first().json;\n\n// AI Agent node returns { output: \"text\" } or just text\nconst text = agentOutput.output || agentOutput.text || JSON.stringify(agentOutput);\n\nreturn [{\n  json: {\n    telegram_chat_id: original.telegram_chat_id,\n    text: text\n  }\n}];"
+      },
+      "id": "format-reply",
+      "name": "Format Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2700,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.telegram_chat_id }}",
+        "text": "={{ $json.text }}"
+      },
+      "id": "telegram-reply",
+      "name": "Telegram Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        2950,
+        300
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "telegram_api",
+          "name": "Telegram API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Message": {
+      "main": [
+        [
+          {
+            "node": "Is Voice?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Voice?": {
+      "main": [
+        [
+          {
+            "node": "Get File Info",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Text Mode",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Info": {
+      "main": [
+        [
+          {
+            "node": "Download Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Audio": {
+      "main": [
+        [
+          {
+            "node": "Local Whisper",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local Whisper": {
+      "main": [
+        [
+          {
+            "node": "Set Voice Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Voice Transcript": {
+      "main": [
+        [
+          {
+            "node": "Prepare Agent Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Mode": {
+      "main": [
+        [
+          {
+            "node": "Prepare Agent Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Agent Input": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Reply": {
+      "main": [
+        [
+          {
+            "node": "Telegram Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Save Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool: Calendar Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {}
+}

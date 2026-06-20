@@ -1,0 +1,6 @@
+# Add these to your n8n docker-compose.yml under environment:
+  OPENROUTER_API_KEY=your_openrouter_key_here
+  SUPABASE_URL=https://your-project.supabase.co
+  SUPABASE_KEY=your_supabase_service_role_key_here
+  TELEGRAM_BOT_TOKEN=your_telegram_bot_token_here
+  WHISPER_SERVER_URL=http://localhost:8000
