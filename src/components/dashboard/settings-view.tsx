@@ -26,6 +26,7 @@ import {
   Shield,
   Eye,
   EyeOff,
+  MessageSquare,
 } from 'lucide-react'
 import { useAppStore } from '@/lib/store'
 
@@ -33,6 +34,7 @@ import { useAppStore } from '@/lib/store'
 const SUPABASE_URL_KEY = 'dashboard_supabase_url'
 const SUPABASE_KEY_KEY = 'dashboard_supabase_key'
 const OPENROUTER_KEY = 'dashboard_openrouter_key'
+const TELEGRAM_BOT_TOKEN_KEY = 'dashboard_telegram_bot_token'
 const ALLOWED_IDS_KEY = 'dashboard_allowed_telegram_ids'
 
 function load(key: string) {
@@ -113,6 +115,10 @@ export function SettingsView() {
   const [openrouterKey, setOpenrouterKey] = useState('')
   const [savedOR, setSavedOR] = useState(false)
 
+  // ── Telegram Bot Token ──
+  const [telegramBotToken, setTelegramBotToken] = useState('')
+  const [savedTelegramToken, setSavedTelegramToken] = useState(false)
+
   // ── Allowed Telegram users ──
   const [allowedIds, setAllowedIds] = useState<string[]>([])
   const [newEntry, setNewEntry] = useState('')
@@ -123,6 +129,7 @@ export function SettingsView() {
     setUrl(load(SUPABASE_URL_KEY))
     setKey(load(SUPABASE_KEY_KEY))
     setOpenrouterKey(load(OPENROUTER_KEY))
+    setTelegramBotToken(load(TELEGRAM_BOT_TOKEN_KEY))
     setAllowedIds(loadList(ALLOWED_IDS_KEY))
   }, [])
 
@@ -138,6 +145,12 @@ export function SettingsView() {
     localStorage.setItem(OPENROUTER_KEY, openrouterKey)
     setSavedOR(true)
     setTimeout(() => setSavedOR(false), 3000)
+  }
+
+  const handleSaveTelegramToken = () => {
+    localStorage.setItem(TELEGRAM_BOT_TOKEN_KEY, telegramBotToken)
+    setSavedTelegramToken(true)
+    setTimeout(() => setSavedTelegramToken(false), 3000)
   }
 
   const handleAddUser = () => {
@@ -255,6 +268,38 @@ export function SettingsView() {
           </div>
 
           <SaveButton onSave={handleSaveOR} saved={savedOR} />
+        </CardContent>
+      </Card>
+
+      {/* ── Telegram Bot Token ── */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <MessageSquare className="h-5 w-5 text-blue-500" />
+            Telegram Bot
+          </CardTitle>
+          <CardDescription>
+            Токен вашого Telegram бота (отриманий від @BotFather).
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="telegram-token" className="flex items-center gap-2">
+              <Key className="h-3.5 w-3.5" />
+              Bot Token
+            </Label>
+            <SecretInput
+              id="telegram-token"
+              value={telegramBotToken}
+              onChange={setTelegramBotToken}
+              placeholder="1234567890:ABCdefGHIjklMNOpqrsTUVwxyz..."
+            />
+            <p className="text-[11px] text-muted-foreground">
+              Використовується для взаємодії з ботом.
+            </p>
+          </div>
+
+          <SaveButton onSave={handleSaveTelegramToken} saved={savedTelegramToken} />
         </CardContent>
       </Card>
 
