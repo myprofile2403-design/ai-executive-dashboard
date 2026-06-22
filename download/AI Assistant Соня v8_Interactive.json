@@ -1616,7 +1616,7 @@
             }
           ]
         },
-        "fallbackOutput": 7
+        "fallbackOutput": 8
       },
       "id": "2e2b281f-93a1-4901-8457-104f3b84aa77",
       "name": "Menu Switch",
@@ -2018,33 +2018,33 @@
         ]
       ]
     },
-    "log-interaction-node": {
+    "Log Interaction": {
       "main": [
         [
           {
-            "node": "get-interaction-count-node",
+            "node": "Get Interaction Count",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "get-interaction-count-node": {
+    "Get Interaction Count": {
       "main": [
         [
           {
-            "node": "check-rate-limit-node",
+            "node": "Check Rate Limit",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "check-rate-limit-node": {
+    "Check Rate Limit": {
       "main": [
         [
           {
-            "node": "send-rate-limit-msg-node",
+            "node": "Send Rate Limit Message",
             "type": "main",
             "index": 0
           }
@@ -2181,14 +2181,14 @@
       "main": [
         [
           {
-            "node": "llm-route-switch-node",
+            "node": "LLM Route Switch",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "llm-route-switch-node": {
+    "LLM Route Switch": {
       "main": [
         [
           {
@@ -2282,7 +2282,7 @@
         ]
       ]
     },
-    "fast-chat-model": {
+    "Fast Chat Model": {
       "ai_languageModel": [
         [
           {
@@ -2316,14 +2316,14 @@
             "index": 0
           },
           {
-            "node": "generate-report-llm-node",
+            "node": "Generate Report LLM",
             "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "smart-chat-model": {
+    "Smart Chat Model": {
       "ai_languageModel": [
         [
           {
@@ -2334,7 +2334,7 @@
         ]
       ]
     },
-    "calendar-memory-node": {
+    "Calendar Memory": {
       "ai_memory": [
         [
           {
@@ -2345,7 +2345,7 @@
         ]
       ]
     },
-    "expense-memory-node": {
+    "Expense Memory": {
       "ai_memory": [
         [
           {
@@ -2356,7 +2356,7 @@
         ]
       ]
     },
-    "task-memory-node": {
+    "Task Memory": {
       "ai_memory": [
         [
           {
@@ -2367,7 +2367,7 @@
         ]
       ]
     },
-    "search-memory-node": {
+    "Search Memory": {
       "ai_memory": [
         [
           {
@@ -2378,7 +2378,7 @@
         ]
       ]
     },
-    "chat-memory-node": {
+    "Chat Memory": {
       "ai_memory": [
         [
           {
@@ -2693,7 +2693,7 @@
       "main": [
         [
           {
-            "node": "log-interaction-node",
+            "node": "Log Interaction",
             "type": "main",
             "index": 0
           }
@@ -2826,7 +2826,9 @@
             "node": "DB Get Active Tasks",
             "type": "main",
             "index": 0
-          },
+          }
+        ],
+        [
           {
             "node": "Rule Classifier",
             "type": "main",
