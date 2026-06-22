@@ -838,7 +838,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: $json.output, parse_mode: 'HTML', reply_markup: JSON.stringify({ keyboard: [ [{text: '➕ Що сьогодні?'}, {text: '💰 Витрати'}], [{text: '✅ Задачі'}, {text: '📝 Нотатки'}], [{text: '🧮 Скільки витратив?'}, {text: '📅 Календар завтра'}], [{text: '📊 Все'}, {text: '📊 Дешборд', web_app: {url: $vars.DASHBOARD_URL || 'https://dara.github.io/ai-executive-assistant/'}}] ], resize_keyboard: true, one_time_keyboard: false }) }) }}",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: $json.output, parse_mode: 'HTML', reply_markup: { keyboard: [ [{text: '➕ Що сьогодні?'}, {text: '💰 Витрати'}], [{text: '✅ Задачі'}, {text: '📝 Нотатки'}], [{text: '🧮 Скільки витратив?'}, {text: '📅 Календар завтра'}], [{text: '📊 Все'}, {text: '📊 Дешборд', web_app: {url: $vars.DASHBOARD_URL || 'https://dara.github.io/ai-executive-assistant/'}}] ], resize_keyboard: true, one_time_keyboard: false } }) }}",
         "options": {}
       },
       "id": "8e904f42-3eff-49db-8463-5a47308a64fa",
