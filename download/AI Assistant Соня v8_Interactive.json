@@ -304,17 +304,17 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/interaction_logs",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/interaction_logs",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Content-Type",
@@ -339,17 +339,17 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/interaction_logs?telegram_chat_id=eq.{{ $('Telegram Trigger').item.json.message.chat.id }}&created_at=gte.{{ (new Date(Date.now() - 60000)).toISOString() }}",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/interaction_logs?telegram_chat_id=eq.{{ $('Telegram Trigger').item.json.message.chat.id }}&created_at=gte.{{ (new Date(Date.now() - 60000)).toISOString() }}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             }
           ]
         },
@@ -402,7 +402,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -516,7 +516,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{$env.WHISPER_SERVER_URL || 'http://whisper:9000'}}/transcribe",
+        "url": "={{$vars.WHISPER_SERVER_URL || 'http://whisper:9000'}}/transcribe",
         "sendBody": true,
         "contentType": "multipart-form-data",
         "bodyParameters": {
@@ -676,17 +676,17 @@
         "name": "save_event",
         "description": "Save an event to the database. Use this ONLY when the user explicitly provides persistent information to save, such as an expense, income, debt, task, meeting, reminder, note, or worked hours. NEVER use this tool for greetings, polite conversation, or general questions.",
         "method": "POST",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/events",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/events",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Content-Type",
@@ -790,11 +790,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             }
           ]
         },
@@ -827,7 +827,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1286,11 +1286,11 @@
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             }
           ]
         },
@@ -1308,7 +1308,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1335,17 +1335,17 @@
     {
       "parameters": {
         "method": "PATCH",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.id}}",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.id}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Content-Type",
@@ -1418,7 +1418,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1466,17 +1466,17 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/events?select=telegram_chat_id",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?select=telegram_chat_id",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             }
           ]
         },
@@ -1507,17 +1507,17 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/events?telegram_chat_id=eq.{{$json.telegram_chat_id}}&or=(type.eq.task,type.eq.debt_given,type.eq.meeting,type.eq.calendar,created_at.gte.{{ (new Date(Date.now() - 7*24*60*60*1000)).toISOString() }})",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?telegram_chat_id=eq.{{$json.telegram_chat_id}}&or=(type.eq.task,type.eq.debt_given,type.eq.meeting,type.eq.calendar,created_at.gte.{{ (new Date(Date.now() - 7*24*60*60*1000)).toISOString() }})",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
+              "value": "=Bearer {{$vars.SUPABASE_KEY}}"
             }
           ]
         },
@@ -1552,7 +1552,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1622,7 +1622,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1649,7 +1649,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1676,7 +1676,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1703,7 +1703,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1730,7 +1730,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -1826,17 +1826,17 @@
     {
       "parameters": {
         "method": "PATCH",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.event_id}}",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.event_id}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "Bearer {{$env.SUPABASE_KEY}}"
+              "value": "Bearer {{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Content-Type",
@@ -1861,17 +1861,17 @@
     {
       "parameters": {
         "method": "PATCH",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.event_id}}",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.event_id}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "Bearer {{$env.SUPABASE_KEY}}"
+              "value": "Bearer {{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Content-Type",
@@ -1896,7 +1896,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/answerCallbackQuery",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/answerCallbackQuery",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ callback_query_id: $('Parse Callback').item.json.callback_id, text: 'Готово!' }) }}",
@@ -1914,7 +1914,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/editMessageText",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/editMessageText",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify({ chat_id: $('Parse Callback').item.json.chat_id, message_id: $('Parse Callback').item.json.message_id, text: $('Parse Callback').item.json.action === 'done' ? '✅ ' + $('Parse Callback').item.json.original_text : '⏰ Перенесено:\\n' + $('Parse Callback').item.json.original_text, parse_mode: 'HTML' }) }}",
@@ -1932,17 +1932,17 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/events?type=eq.task&status=eq.open&telegram_chat_id=eq.{{$('Telegram Trigger').item.json.message.chat.id}}&select=id,title,due_datetime&order=created_at.desc",
+        "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?type=eq.task&status=eq.open&telegram_chat_id=eq.{{$('Telegram Trigger').item.json.message.chat.id}}&select=id,title,due_datetime&order=created_at.desc",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
+              "value": "={{$vars.SUPABASE_KEY}}"
             },
             {
               "name": "Authorization",
-              "value": "Bearer {{$env.SUPABASE_KEY}}"
+              "value": "Bearer {{$vars.SUPABASE_KEY}}"
             }
           ]
         },
@@ -1973,7 +1973,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
