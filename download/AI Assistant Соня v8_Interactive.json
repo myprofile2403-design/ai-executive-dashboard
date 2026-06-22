@@ -2113,7 +2113,7 @@
       "main": [
         [
           {
-            "node": "Rule Classifier",
+            "node": "Menu Switch",
             "type": "main",
             "index": 0
           }
@@ -2772,16 +2772,63 @@
     },
     "Menu Switch": {
       "main": [
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
-        [],
+        [
+          {
+            "node": "Send Tasks Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Calendar Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Finance Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Reports Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Main Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Main Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Main Menu",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "DB Get Active Tasks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Rule Classifier",
             "type": "main",
             "index": 0
           }
