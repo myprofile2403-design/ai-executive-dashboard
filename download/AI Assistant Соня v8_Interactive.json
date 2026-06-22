@@ -1599,16 +1599,8 @@
               "value2": "📊 Звіт"
             },
             {
-              "operation": "equal",
-              "value2": "⬅️ Назад"
-            },
-            {
-              "operation": "equal",
-              "value2": "🏠 Головне меню"
-            },
-            {
-              "operation": "equal",
-              "value2": "/start"
+              "operation": "regex",
+              "value2": "^(⬅️ Назад|🏠 Головне меню|/start)$"
             },
             {
               "operation": "equal",
@@ -1616,7 +1608,7 @@
             }
           ]
         },
-        "fallbackOutput": 8
+        "fallbackOutput": 6
       },
       "id": "2e2b281f-93a1-4901-8457-104f3b84aa77",
       "name": "Menu Switch",
@@ -2796,20 +2788,6 @@
         [
           {
             "node": "Send Reports Menu",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Send Main Menu",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Send Main Menu",
             "type": "main",
             "index": 0
           }
