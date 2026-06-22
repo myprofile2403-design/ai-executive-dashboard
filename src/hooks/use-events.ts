@@ -13,6 +13,37 @@ function getClient(): SupabaseClient | null {
   return createSupabaseClient(url, key)
 }
 
+export function getTelegramChatId(): string | null {
+  if (typeof window === 'undefined') return null
+  
+  // 1. Try to read from Telegram WebApp SDK if available
+  const tg = (window as any).Telegram?.WebApp
+  if (tg?.initDataUnsafe?.user?.id) {
+    return String(tg.initDataUnsafe.user.id)
+  }
+  
+  // 2. Try to get it from URL parameter if specified (e.g. ?chat_id=12345)
+  const urlParams = new URLSearchParams(window.location.search)
+  const queryId = urlParams.get('chat_id') || urlParams.get('tg_id')
+  if (queryId) {
+    // Save to localStorage for convenience
+    localStorage.setItem('dashboard_telegram_chat_id', queryId)
+    return queryId
+  }
+
+  // 3. Fallback to localStorage
+  const savedId = localStorage.getItem('dashboard_telegram_chat_id')
+  if (savedId) return savedId
+
+  // 4. Fallback to first allowed Telegram ID in settings
+  try {
+    const allowed = JSON.parse(localStorage.getItem('dashboard_allowed_telegram_ids') || '[]')
+    if (allowed.length > 0) return allowed[0]
+  } catch {}
+
+  return null
+}
+
 export function useEvents(params: {
   type?: string
   status?: string
@@ -36,9 +67,17 @@ export function useEvents(params: {
         return
       }
 
+      const chatId = getTelegramChatId()
+      if (!chatId) {
+        setError('Не знайдено Telegram Chat ID. Відкрийте Mini App через Telegram або вкажіть ID у налаштуваннях.')
+        setLoading(false)
+        return
+      }
+
       let query = client
         .from('events')
         .select('*', { count: 'exact' })
+        .eq('telegram_chat_id', chatId)
         .order('created_at', { ascending: false })
         .range(0, 99)
 
@@ -137,6 +176,13 @@ export function useStats() {
         return
       }
 
+      const chatId = getTelegramChatId()
+      if (!chatId) {
+        setError('Не знайдено Telegram Chat ID. Відкрийте Mini App через Telegram або вкажіть ID у налаштуваннях.')
+        setLoading(false)
+        return
+      }
+
       const now = new Date()
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
       const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString()
@@ -148,6 +194,7 @@ export function useStats() {
         .from('events')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'task')
+        .eq('telegram_chat_id', chatId)
         .in('status', ['open', 'in-progress'])
 
       // Today's tasks
@@ -155,6 +202,7 @@ export function useStats() {
         .from('events')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'task')
+        .eq('telegram_chat_id', chatId)
         .gte('created_at', todayStart)
         .lt('created_at', todayEnd)
 
@@ -163,6 +211,7 @@ export function useStats() {
         .from('events')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'reminder')
+        .eq('telegram_chat_id', chatId)
         .neq('status', 'done')
 
       // Overdue tasks
@@ -170,6 +219,7 @@ export function useStats() {
         .from('events')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'task')
+        .eq('telegram_chat_id', chatId)
         .in('status', ['open', 'in-progress'])
         .lt('due_datetime', now.toISOString())
 
@@ -178,6 +228,7 @@ export function useStats() {
         .from('events')
         .select('amount, currency')
         .eq('type', 'expense')
+        .eq('telegram_chat_id', chatId)
         .gte('created_at', todayStart)
         .lt('created_at', todayEnd)
 
@@ -186,6 +237,7 @@ export function useStats() {
         .from('events')
         .select('amount, currency')
         .eq('type', 'expense')
+        .eq('telegram_chat_id', chatId)
         .gte('created_at', weekStart)
 
       // Month's expenses
@@ -193,6 +245,7 @@ export function useStats() {
         .from('events')
         .select('amount, currency')
         .eq('type', 'expense')
+        .eq('telegram_chat_id', chatId)
         .gte('created_at', monthStart)
 
       // Notes count
@@ -200,12 +253,14 @@ export function useStats() {
         .from('events')
         .select('*', { count: 'exact', head: true })
         .eq('type', 'note')
+        .eq('telegram_chat_id', chatId)
 
       // Month's work hours
       const { data: monthWork } = await client
         .from('events')
         .select('amount')
         .eq('type', 'work')
+        .eq('telegram_chat_id', chatId)
         .gte('created_at', monthStart)
 
       const sumAmounts = (items: { amount: number | null; currency: string | null }[] | null) => {

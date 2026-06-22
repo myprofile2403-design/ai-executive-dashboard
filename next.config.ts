@@ -1,9 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: "export",
-  // No basePath needed for custom domain (dashboard.n8n-accaisona.site)
-  // basePath only needed for GitHub Pages subfolder deployment
+  // Standalone output for SSR — needed for /api/auth HMAC verification
+  output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },

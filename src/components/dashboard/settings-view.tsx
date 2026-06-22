@@ -225,6 +225,23 @@ export function SettingsView() {
             <p className="text-[11px] text-muted-foreground">
               Dashboard → Settings → API → Project API keys → <strong>anon public</strong>
             </p>
+            {(() => {
+              try {
+                const parts = key.split('.');
+                if (parts.length === 3) {
+                  const payload = JSON.parse(atob(parts[1]));
+                  if (payload.role === 'service_role') {
+                    return (
+                      <div className="rounded-lg bg-destructive/15 border border-destructive/30 p-3 text-[12px] text-destructive mt-2">
+                        <strong>⚠️ КРИТИЧНА ПОМИЛКА БЕЗПЕКИ:</strong> Ви ввели <code>service_role</code> ключ! 
+                        Він дає повний доступ до вашої бази даних в обхід RLS. Негайно замініть його на <code>anon public</code> ключ.
+                      </div>
+                    );
+                  }
+                }
+              } catch {}
+              return null;
+            })()}
           </div>
 
           <SaveButton onSave={handleSaveSupabase} saved={savedSupabase} />
