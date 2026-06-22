@@ -303,131 +303,6 @@
     },
     {
       "parameters": {
-        "method": "POST",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/interaction_logs",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
-            },
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={ \"telegram_chat_id\": \"{{ $('Telegram Trigger').item.json.message.chat.id }}\" }",
-        "options": {}
-      },
-      "id": "log-interaction-node",
-      "name": "Log Interaction",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        440,
-        2330
-      ]
-    },
-    {
-      "parameters": {
-        "method": "GET",
-        "url": "={{$env.SUPABASE_URL}}/rest/v1/interaction_logs?telegram_chat_id=eq.{{ $('Telegram Trigger').item.json.message.chat.id }}&created_at=gte.{{ (new Date(Date.now() - 60000)).toISOString() }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "apikey",
-              "value": "={{$env.SUPABASE_KEY}}"
-            },
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{$env.SUPABASE_KEY}}"
-            }
-          ]
-        },
-        "options": {
-          "rawHeaders": "Prefer: count=exact"
-        }
-      },
-      "id": "get-interaction-count-node",
-      "name": "Get Interaction Count",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        620,
-        2330
-      ]
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ parseInt($json.headers['content-range'].split('/')[1]) || 1 }}",
-              "rightValue": 10,
-              "operator": {
-                "type": "number",
-                "operation": "gt",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "check-rate-limit-node",
-      "name": "Check Rate Limit",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        800,
-        2330
-      ]
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://api.telegram.org/bot{{$env.TELEGRAM_BOT_TOKEN}}/sendMessage",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Content-Type",
-              "value": "application/json"
-            }
-          ]
-        },
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={ \"chat_id\": \"{{ $('Telegram Trigger').item.json.message.chat.id }}\", \"text\": \"⚠️ <b>Ви перевищили ліміт запитів!</b>\\nМаксимум 10 повідомлень на хвилину. Будь ласка, зачекайте.\", \"parse_mode\": \"HTML\" }",
-        "options": {}
-      },
-      "id": "send-rate-limit-msg-node",
-      "name": "Send Rate Limit Message",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [
-        980,
-        2130
-      ]
-    },
-    {
-      "parameters": {
         "rules": {
           "values": [
             {
@@ -2010,46 +1885,6 @@
         ]
       ]
     },
-    "Log Interaction": {
-      "main": [
-        [
-          {
-            "node": "Get Interaction Count",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Get Interaction Count": {
-      "main": [
-        [
-          {
-            "node": "Check Rate Limit",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Rate Limit": {
-      "main": [
-        [
-          {
-            "node": "Send Rate Limit Message",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Switch",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Switch": {
       "main": [
         [
@@ -2685,7 +2520,7 @@
       "main": [
         [
           {
-            "node": "Log Interaction",
+            "node": "Switch",
             "type": "main",
             "index": 0
           }
