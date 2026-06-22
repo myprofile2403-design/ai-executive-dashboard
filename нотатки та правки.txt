@@ -1,10 +1,21 @@
+# Нотатки та правки — AI Assistant Соня
+
+## Налаштування клавіатури в n8n (Response + Mini App вузол)
+
 Відкрий ноду Response в n8n
 Знайди Additional Fields → Reply Markup
 Вибери Reply Keyboard
 Додай 4 рядки кнопок з текстами:
-Рядок 1: ➕ Що сьогодні? / 💰 Витрати
-Рядок 2: ✅ Задачі / 📝 Нотатки
-Рядок 3: 🧮 Скільки витратив? / 📅 Календар завтра
-Рядок 4: 📊 Все
+  Рядок 1: ➕ Що сьогодні? / 💰 Витрати
+  Рядок 2: ✅ Задачі / 📝 Нотатки
+  Рядок 3: 🧮 Скільки витратив? / 📅 Календар завтра
+  Рядок 4: 📊 Все / 📊 Дешборд (Web App)
 Увімкни Resize Keyboard ✅
 Вимкни One Time Keyboard ❌
+
+## Після деплою v7
+
+- Замінити CALENDAR_WORKFLOW_ID в toolWorkflow вузлі на реальний ID
+- Додати .env.local на сервері з TELEGRAM_BOT_TOKEN і SUPABASE_JWT_SECRET
+- Виконати supabase_indexes.sql у Supabase SQL Editor
+- Перевірити Daily Report о 08:00
