@@ -1468,27 +1468,33 @@
           "rules": [
             {
               "operation": "equal",
-              "value2": "📋 Завдання"
+              "value2": "📋 Завдання",
+              "output": 0
             },
             {
               "operation": "equal",
-              "value2": "📅 Календар"
+              "value2": "📅 Календар",
+              "output": 1
             },
             {
               "operation": "equal",
-              "value2": "💰 Фінанси"
+              "value2": "💰 Фінанси",
+              "output": 2
             },
             {
               "operation": "equal",
-              "value2": "📊 Звіт"
+              "value2": "📊 Звіт",
+              "output": 3
             },
             {
               "operation": "regex",
-              "value2": "^(⬅️ Назад|🏠 Головне меню|/start)$"
+              "value2": "^(⬅️ Назад|🏠 Головне меню|/start)$",
+              "output": 4
             },
             {
               "operation": "equal",
-              "value2": "📂 Активні задачі"
+              "value2": "📂 Активні задачі",
+              "output": 5
             }
           ]
         },
