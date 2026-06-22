@@ -838,7 +838,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: $json.output, parse_mode: 'HTML', reply_markup: { keyboard: [ [{text: '➕ Що сьогодні?'}, {text: '💰 Витрати'}], [{text: '✅ Задачі'}, {text: '📝 Нотатки'}], [{text: '🧮 Скільки витратив?'}, {text: '📅 Календар завтра'}], [{text: '📊 Все'}, {text: '📊 Дешборд', web_app: {url: $vars.DASHBOARD_URL || 'https://dara.github.io/ai-executive-assistant/'}}] ], resize_keyboard: true, one_time_keyboard: false } }) }}",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: $json.output, parse_mode: 'HTML' }) }}",
         "options": {}
       },
       "id": "8e904f42-3eff-49db-8463-5a47308a64fa",
@@ -1573,6 +1573,188 @@
       "position": [
         1450,
         4300
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "value1": "={{ $json.text }}",
+        "rules": {
+          "rules": [
+            {
+              "operation": "equal",
+              "value2": "📋 Завдання"
+            },
+            {
+              "operation": "equal",
+              "value2": "📅 Календар"
+            },
+            {
+              "operation": "equal",
+              "value2": "💰 Фінанси"
+            },
+            {
+              "operation": "equal",
+              "value2": "📊 Звіт"
+            },
+            {
+              "operation": "equal",
+              "value2": "⬅️ Назад"
+            },
+            {
+              "operation": "equal",
+              "value2": "🏠 Головне меню"
+            },
+            {
+              "operation": "equal",
+              "value2": "/start"
+            }
+          ]
+        },
+        "fallbackOutput": 7
+      },
+      "id": "2e2b281f-93a1-4901-8457-104f3b84aa77",
+      "name": "Menu Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        2200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '📋 <b>Розділ: Завдання</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"➕ Додати задачу\"}], [{\"text\": \"📂 Активні задачі\"}, {\"text\": \"✅ Виконані\"}], [{\"text\": \"🔥 Пріоритетні\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+        "options": {}
+      },
+      "id": "fd7fc929-6a4e-4cdd-a975-439c1ca000f9",
+      "name": "Send Tasks Menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1900,
+        1800
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '📅 <b>Розділ: Календар</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"📆 Сьогодні\"}, {\"text\": \"📅 Завтра\"}], [{\"text\": \"🗓 Тиждень\"}], [{\"text\": \"➕ Нова подія\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+        "options": {}
+      },
+      "id": "05dfd7b5-e9ce-46ba-b217-ecd0c4769b0a",
+      "name": "Send Calendar Menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1900,
+        2000
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '💰 <b>Розділ: Фінанси</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"➕ Додати витрату\"}], [{\"text\": \"📈 Статистика\"}], [{\"text\": \"💵 За сьогодні\"}, {\"text\": \"📆 За місяць\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+        "options": {}
+      },
+      "id": "cf8c42ac-43f3-4562-bd1d-9e6e61a64ffa",
+      "name": "Send Finance Menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1900,
+        2200
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '📊 <b>Розділ: Звіти</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"🌅 Ранковий звіт\"}], [{\"text\": \"📅 Тижневий звіт\"}], [{\"text\": \"💰 Фінансовий звіт\"}, {\"text\": \"🎯 Продуктивність\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+        "options": {}
+      },
+      "id": "570f1374-ad05-4624-9098-a2201bc5bf4d",
+      "name": "Send Reports Menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1900,
+        2400
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '🏠 <b>Головне меню</b>\\nОберіть розділ:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"🏠 Головне меню\"}, {\"text\": \"📊 Звіт\"}], [{\"text\": \"📋 Завдання\"}], [{\"text\": \"📅 Календар\"}], [{\"text\": \"💰 Фінанси\"}], [{\"text\": \"📊 Дешборд\", \"web_app\": {\"url\": \"={{ $vars.DASHBOARD_URL || 'https://dashboard.n8n-accaisona.site' }}\"}}]], resize_keyboard: true } }) }}",
+        "options": {}
+      },
+      "id": "5d4c4888-047b-4e17-8dd2-c88047570d8e",
+      "name": "Send Main Menu",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1900,
+        2600
       ]
     }
   ],
