@@ -1,13 +1,3 @@
--- =====================================================
--- AI Executive Assistant - Supabase Schema
--- Unified events table with RLS
--- =====================================================
-
-
-
-
-
-
 
 create table if not exists events (
     id uuid primary key default gen_random_uuid(),
