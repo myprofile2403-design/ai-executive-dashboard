@@ -411,7 +411,8 @@
       "position": [
         1408,
         2032
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -724,7 +725,8 @@
       "position": [
         2800,
         2200
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1178,7 +1180,8 @@
       "position": [
         450,
         3900
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1205,7 +1208,8 @@
       "position": [
         700,
         3900
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1244,7 +1248,8 @@
       "position": [
         950,
         3900
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {},
@@ -1315,7 +1320,8 @@
       "position": [
         2750,
         3900
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1364,7 +1370,8 @@
       "position": [
         450,
         4300
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1405,7 +1412,8 @@
       "position": [
         950,
         4300
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1449,7 +1457,8 @@
       "position": [
         1450,
         4300
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1519,7 +1528,8 @@
       "position": [
         1900,
         1800
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1546,7 +1556,8 @@
       "position": [
         1900,
         2000
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1573,7 +1584,8 @@
       "position": [
         1900,
         2200
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1600,7 +1612,8 @@
       "position": [
         1900,
         2400
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1627,7 +1640,8 @@
       "position": [
         1900,
         2600
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1731,7 +1745,8 @@
       "position": [
         1000,
         2500
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1766,7 +1781,8 @@
       "position": [
         1000,
         2700
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1784,7 +1800,8 @@
       "position": [
         1200,
         2600
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1802,7 +1819,8 @@
       "position": [
         1400,
         2600
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
@@ -1830,11 +1848,12 @@
       "position": [
         1900,
         2800
-      ]
+      ],
+      "alwaysOutputData": true
     },
     {
       "parameters": {
-        "jsCode": "\nconst tasks = $input.all()[0].json;\nif (!tasks || tasks.length === 0) {\n  return [{ json: { text: \"🎉 У вас немає відкритих задач!\", inline_keyboard: [] } }];\n}\n\nlet text = \"📋 <b>Ваші активні задачі:</b>\\n\\n\";\nconst keyboard = [];\n\ntasks.forEach((task, index) => {\n  const num = index + 1;\n  text += `${num}. ${task.title}\\n`;\n  keyboard.push([\n    { text: `✅ Виконати (${num})`, callback_data: `done:${task.id}` },\n    { text: `⏰ Завтра`, callback_data: `tom:${task.id}` }\n  ]);\n});\n\nreturn [{ json: { text: text, inline_keyboard: keyboard } }];\n"
+        "jsCode": "\nconst items = $input.all();\nif (!items || items.length === 0 || Object.keys(items[0].json).length === 0) {\n  return [{ json: { text: \"🎉 У вас немає відкритих задач! Щоб додати задачу, просто напишіть її текстом або голосом.\", inline_keyboard: [] } }];\n}\n\nlet tasks = items.map(item => item.json);\n\n// Sometimes Supabase returns an array inside the first item if we didn't split it, but if it's multiple items, they are already split.\nif (tasks.length === 1 && Array.isArray(tasks[0])) {\n  tasks = tasks[0];\n}\n\nif (!tasks || tasks.length === 0 || (tasks.length === 1 && Object.keys(tasks[0]).length === 0)) {\n  return [{ json: { text: \"🎉 У вас немає відкритих задач! Щоб додати задачу, просто напишіть її текстом або голосом.\", inline_keyboard: [] } }];\n}\n\nlet text = \"📋 <b>Ваші активні задачі:</b>\\n\\n\";\nconst keyboard = [];\n\ntasks.forEach((task, index) => {\n  const num = index + 1;\n  text += `${num}. ${task.title}\\n`;\n  keyboard.push([\n    { text: `✅ Виконати (${num})`, callback_data: `done:${task.id}` },\n    { text: `⏰ Завтра`, callback_data: `tom:${task.id}` }\n  ]);\n});\n\nreturn [{ json: { text: text, inline_keyboard: keyboard } }];\n"
       },
       "id": "6ba61f36-327e-4f62-9351-7cea313ad9bf",
       "name": "Format Interactive List",
@@ -1870,7 +1889,8 @@
       "position": [
         2300,
         2800
-      ]
+      ],
+      "alwaysOutputData": true
     }
   ],
   "connections": {
