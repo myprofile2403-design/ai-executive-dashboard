@@ -9,14 +9,27 @@ interface TelegramAuthState {
 }
 
 export function TelegramProvider({ children }: { children: React.ReactNode }) {
-  const [auth, setAuth] = useState<TelegramAuthState>({ status: 'idle' })
+  const [auth, setAuth] = useState<TelegramAuthState>({ status: 'loading' })
 
   useEffect(() => {
-    // ВІДМКНЕНО АВТЕНТИФІКАЦІЮ: 
-    // Одразу пускаємо користувача в дашборд.
-    setAuth({ status: 'authenticated' })
+    // Fetch Supabase configuration from server so user doesn't have to enter it
+    fetch('/api/config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.supabaseUrl && data.supabaseKey) {
+          localStorage.setItem('dashboard_supabase_url', data.supabaseUrl)
+          localStorage.setItem('dashboard_supabase_key', data.supabaseKey)
+        }
+        
+        // ВІДМКНЕНО АВТЕНТИФІКАЦІЮ: Одразу пускаємо користувача
+        setAuth({ status: 'authenticated' })
+      })
+      .catch((err) => {
+        console.error('Failed to load config', err)
+        setAuth({ status: 'authenticated' })
+      })
     
-    // Якщо треба, можна також зчитувати initData просто щоб знати Chat ID (без перевірки підпису)
+    // Зчитуємо initData щоб знати Chat ID (без перевірки підпису)
     try {
       if (isTelegramWebApp()) {
         const tg = (window as any).Telegram?.WebApp
