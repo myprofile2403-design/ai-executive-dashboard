@@ -53,10 +53,19 @@ export async function POST(req: NextRequest) {
     const user = JSON.parse(userString);
     const chatId = String(user.id);
 
-    // 3. Generate a secure Supabase JWT containing user's telegram_chat_id
+    // Securely check if user is allowed to access the family dashboard
+    const allowedIds = (process.env.ALLOWED_TELEGRAM_IDS || '').split(',').map(id => id.trim());
+    const adminChatId = process.env.ADMIN_CHAT_ID || allowedIds[0] || chatId; // Default to admin ID
+
+    if (allowedIds.length > 0 && !allowedIds.includes(chatId)) {
+      return NextResponse.json({ error: 'Access denied. You are not an allowed family member.' }, { status: 403 });
+    }
+
+    // 3. Generate a secure Supabase JWT containing the SHARED family telegram_chat_id
+    // This merges husband and wife into the same database view
     const payload = {
       role: 'authenticated',
-      telegram_chat_id: chatId,
+      telegram_chat_id: adminChatId,
       exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 7), // 7 days expiration
     };
 
