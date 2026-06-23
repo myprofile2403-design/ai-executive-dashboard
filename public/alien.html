@@ -23,8 +23,8 @@
     --eye-white: #f8fff0;
     --eye-iris: #1a3a10;
     --eye-highlight: #ffffff;
-    --text-color: #ffe855;
-    --text-glow: rgba(255, 232, 85, 0.6);
+    --text-color: #000000;
+    --text-glow: rgba(255, 255, 255, 0.9);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -234,9 +234,10 @@
     font-style: italic;
     color: var(--text-color);
     text-shadow:
-      0 0 20px var(--text-glow),
-      0 0 40px var(--text-glow),
-      0 2px 4px rgba(0,0,0,0.5);
+      0 0 15px var(--text-glow),
+      0 0 30px var(--text-glow),
+      0 0 50px var(--text-glow),
+      0 2px 4px rgba(255,255,255,1);
     letter-spacing: 6px;
     display: flex;
     gap: 4px;
@@ -264,9 +265,10 @@
   }
 
   .sub-text {
-    margin-top: 8px;
-    font-size: 14px;
-    color: rgba(212,168,67,0.35);
+    margin-top: 12px;
+    font-size: 22px;
+    color: #000000;
+    text-shadow: 0 0 15px rgba(255,255,255,0.9), 0 0 30px rgba(255,255,255,0.9);
     letter-spacing: 5px;
     text-transform: uppercase;
     font-style: normal;
@@ -603,8 +605,8 @@
   </div>
 
   <!-- Текст під тарілкою -->
-  <div class="text-container">
-    <div class="ni-text" style="font-size: 44px; flex-wrap: wrap;">
+  <div class="text-container" style="width: 100%;">
+    <div class="ni-text" style="font-size: 58px; flex-wrap: wrap; line-height: 1.1; text-align: center;">
       <span class="ni-char">Ось</span>
       <span class="ni-char">&nbsp;</span>
       <span class="ni-char">тебе</span>
