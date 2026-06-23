@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Інопланетянин каже НІ — Disney Style</title>
+<style>
+  :root {
+    --sky-top: #0b1a2e;
+    --sky-mid: #122840;
+    --sky-bot: #1a3550;
+    --ufo-gold: #d4a843;
+    --ufo-light: #f0d878;
+    --ufo-mid: #b8922e;
+    --ufo-dark: #7a5e1a;
+    --ufo-shadow: #4a3a10;
+    --dome-glass: rgba(180, 220, 255, 0.18);
+    --alien-skin: #5edd5e;
+    --alien-light: #8aff8a;
+    --alien-mid: #3ab83a;
+    --alien-dark: #1e7a1e;
+    --alien-shadow: #0e4a0e;
+    --eye-white: #f8fff0;
+    --eye-iris: #1a3a10;
+    --eye-highlight: #ffffff;
+    --text-color: #ffe855;
+    --text-glow: rgba(255, 232, 85, 0.6);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 50%, var(--sky-bot) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Georgia', serif;
+  }
+
+  canvas#stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+  }
+
+  .back-glow {
+    position: fixed;
+    width: 700px; height: 700px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, rgba(212,168,67,0.03) 40%, transparent 70%);
+    top: 45%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    animation: glow-breathe 5s ease-in-out infinite;
+  }
+
+  @keyframes glow-breathe {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    50% { transform: translate(-50%, -50%) scale(1.12); opacity: 1; }
+  }
+
+  .scene {
+    position: relative;
+    z-index: 2;
+    width: 600px;
+    height: 600px;
+    animation: scene-hover 4s ease-in-out infinite;
+  }
+
+  @keyframes scene-hover {
+    0%, 100% { transform: translateY(0) rotate(-0.5deg); }
+    50% { transform: translateY(-14px) rotate(0.5deg); }
+  }
+
+  .ufo-container {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 420px;
+    height: 200px;
+    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+  }
+
+  .ufo-container svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .ufo-light {
+    animation: ufo-light-pulse 1.2s ease-in-out infinite alternate;
+  }
+  .ufo-light:nth-child(odd) { animation-delay: 0s; }
+  .ufo-light:nth-child(even) { animation-delay: 0.6s; }
+
+  @keyframes ufo-light-pulse {
+    0% { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
+
+  .beam-container {
+    position: absolute;
+    top: 295px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 180px;
+    overflow: visible;
+    animation: beam-shimmer 3s ease-in-out infinite;
+  }
+
+  @keyframes beam-shimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.85; }
+  }
+
+  .alien-container {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 180px;
+    z-index: 3;
+  }
+
+  .alien-shake {
+    animation: head-shake 0.7s ease-in-out infinite;
+    transform-origin: center 85%;
+  }
+
+  @keyframes head-shake {
+    0%, 100% { transform: rotate(0deg); }
+    12% { transform: rotate(-16deg); }
+    25% { transform: rotate(2deg); }
+    37% { transform: rotate(16deg); }
+    50% { transform: rotate(-2deg); }
+    62% { transform: rotate(-12deg); }
+    75% { transform: rotate(1deg); }
+    87% { transform: rotate(10deg); }
+  }
+
+  .alien-bob {
+    animation: alien-bob 4s ease-in-out infinite;
+  }
+
+  @keyframes alien-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .alien-container svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(0 4px 12px rgba(30,122,30,0.3));
+  }
+
+  .eye-blink {
+    animation: blink-anim 5s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  @keyframes blink-anim {
+    0%, 43%, 47%, 100% { transform: scaleY(1); }
+    45% { transform: scaleY(0.05); }
+  }
+
+  .pupil-move {
+    animation: pupil-shift 4s ease-in-out infinite;
+  }
+
+  @keyframes pupil-shift {
+    0%, 100% { transform: translate(0, 0); }
+    20% { transform: translate(3px, -2px); }
+    40% { transform: translate(-4px, 1px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(-2px, -1px); }
+  }
+
+  .mouth-anim {
+    animation: mouth-talk 0.7s ease-in-out infinite;
+    transform-origin: center top;
+  }
+
+  @keyframes mouth-talk {
+    0%, 100% { transform: scaleY(1) scaleX(1); }
+    20% { transform: scaleY(1.5) scaleX(0.85); }
+    40% { transform: scaleY(0.6) scaleX(1.1); }
+    60% { transform: scaleY(1.3) scaleX(0.9); }
+    80% { transform: scaleY(0.8) scaleX(1.05); }
+  }
+
+  .hand-left {
+    animation: hand-l 0.7s ease-in-out infinite;
+    transform-origin: 90% 10%;
+  }
+  .hand-right {
+    animation: hand-r 0.7s ease-in-out infinite;
+    transform-origin: 10% 10%;
+  }
+
+  @keyframes hand-l {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-30deg); }
+    50% { transform: rotate(5deg); }
+    75% { transform: rotate(-25deg); }
+  }
+
+  @keyframes hand-r {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(30deg); }
+    50% { transform: rotate(-5deg); }
+    75% { transform: rotate(25deg); }
+  }
+
+  .text-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    text-align: center;
+  }
+
+  .ni-text {
+    font-size: 56px;
+    font-weight: 900;
+    font-style: italic;
+    color: var(--text-color);
+    text-shadow:
+      0 0 20px var(--text-glow),
+      0 0 40px var(--text-glow),
+      0 2px 4px rgba(0,0,0,0.5);
+    letter-spacing: 6px;
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  .ni-char {
+    display: inline-block;
+    animation: ni-pop 0.7s ease-in-out infinite;
+  }
+
+  .ni-char:nth-child(1) { animation-delay: 0s; }
+  .ni-char:nth-child(2) { animation-delay: 0.06s; }
+  .ni-char:nth-child(3) { animation-delay: 0.12s; }
+  .ni-char:nth-child(4) { animation-delay: 0.18s; }
+  .ni-char:nth-child(5) { animation-delay: 0.24s; }
+  .ni-char:nth-child(6) { animation-delay: 0.3s; }
+  .ni-char:nth-child(7) { animation-delay: 0.36s; }
+
+  @keyframes ni-pop {
+    0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+    25% { transform: translateY(-12px) scale(1.2) rotate(-5deg); }
+    50% { transform: translateY(3px) scale(0.9) rotate(2deg); }
+    75% { transform: translateY(-6px) scale(1.08) rotate(-2deg); }
+  }
+
+  .sub-text {
+    margin-top: 8px;
+    font-size: 14px;
+    color: rgba(212,168,67,0.35);
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  .sparkles {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .sparkle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: sparkle-float 5s ease-in-out infinite;
+  }
+
+  @keyframes sparkle-float {
+    0% { opacity: 0; transform: translateY(0) scale(0) rotate(0deg); }
+    15% { opacity: 0.9; transform: translateY(-20px) scale(1) rotate(90deg); }
+    85% { opacity: 0.2; transform: translateY(-100px) scale(0.4) rotate(270deg); }
+    100% { opacity: 0; transform: translateY(-130px) scale(0) rotate(360deg); }
+  }
+
+  .moon {
+    position: fixed;
+    top: 8%;
+    right: 12%;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffbe8, #e8d8a0 60%, #c4a860);
+    box-shadow:
+      0 0 30px rgba(255,251,232,0.3),
+      0 0 80px rgba(255,251,232,0.1);
+    z-index: 0;
+  }
+
+  .moon::before {
+    content: '';
+    position: absolute;
+    top: 15px; left: 20px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(180,160,100,0.25);
+  }
+
+  .moon::after {
+    content: '';
+    position: absolute;
+    top: 35px; left: 38px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(180,160,100,0.2);
+  }
+
+  .cloud {
+    position: fixed;
+    z-index: 0;
+    opacity: 0.06;
+    border-radius: 50%;
+    background: #fff;
+    filter: blur(20px);
+  }
+
+  .cloud-1 { top: 15%; left: 5%; width: 200px; height: 50px; }
+  .cloud-2 { top: 25%; right: 8%; width: 160px; height: 40px; }
+  .cloud-3 { top: 60%; left: 15%; width: 240px; height: 45px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .scene { transform: scale(0.55); }
+    .ni-text { font-size: 40px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="moon"></div>
+<div class="cloud cloud-1"></div>
+<div class="cloud cloud-2"></div>
+<div class="cloud cloud-3"></div>
+<div class="back-glow"></div>
+<div class="sparkles" id="sparkles"></div>
+
+<div class="scene">
+
+  <!-- Інопланетянин -->
+  <div class="alien-container">
+    <div class="alien-bob">
+      <div class="alien-shake">
+        <svg viewBox="0 0 160 180" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="skinGrad" cx="45%" cy="35%" r="55%">
+              <stop offset="0%" stop-color="#8aff8a"/>
+              <stop offset="40%" stop-color="#5edd5e"/>
+              <stop offset="75%" stop-color="#3ab83a"/>
+              <stop offset="100%" stop-color="#1e7a1e"/>
+            </radialGradient>
+            <radialGradient id="skinShadow" cx="50%" cy="90%" r="50%">
+              <stop offset="0%" stop-color="rgba(14,74,14,0.4)"/>
+              <stop offset="100%" stop-color="rgba(14,74,14,0)"/>
+            </radialGradient>
+            <radialGradient id="eyeGrad" cx="40%" cy="35%" r="55%">
+              <stop offset="0%" stop-color="#ffffff"/>
+              <stop offset="80%" stop-color="#e8f0e0"/>
+              <stop offset="100%" stop-color="#c0d0b0"/>
+            </radialGradient>
+            <radialGradient id="irisGrad" cx="45%" cy="40%" r="50%">
+              <stop offset="0%" stop-color="#3a6a20"/>
+              <stop offset="60%" stop-color="#1a3a10"/>
+              <stop offset="100%" stop-color="#0a1a05"/>
+            </radialGradient>
+            <linearGradient id="handGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5edd5e"/>
+              <stop offset="100%" stop-color="#1e7a1e"/>
+            </linearGradient>
+            <radialGradient id="headHighlight" cx="35%" cy="25%" r="30%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.25)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Руки (за головою) -->
+          <g class="hand-left">
+            <path d="M15,100 Q5,120 8,145 Q10,155 18,150 Q22,140 20,125 Q24,135 26,148 Q28,156 34,150 Q32,138 28,120 Q32,130 35,142 Q38,150 42,144 Q38,130 30,110 Q28,105 22,100 Z"
+              fill="url(#handGrad)" stroke="#1a6a1a" stroke-width="1"/>
+          </g>
+          <g class="hand-right">
+            <path d="M145,100 Q155,120 152,145 Q150,155 142,150 Q138,140 140,125 Q136,135 134,148 Q132,156 126,150 Q128,138 132,120 Q128,130 125,142 Q122,150 118,144 Q122,130 130,110 Q132,105 138,100 Z"
+              fill="url(#handGrad)" stroke="#1a6a1a" stroke-width="1"/>
+          </g>
+
+          <!-- Шия -->
+          <path d="M65,128 Q65,140 70,148 L90,148 Q95,140 95,128 Z"
+            fill="#3ab83a" stroke="#1a6a1a" stroke-width="0.5"/>
+          <path d="M70,148 Q80,152 90,148" fill="none" stroke="#1e7a1e" stroke-width="1"/>
+
+          <!-- Голова -->
+          <ellipse cx="80" cy="72" rx="52" ry="60" fill="url(#skinGrad)" stroke="#1a6a1a" stroke-width="1.5"/>
+
+          <!-- Тінь на голові -->
+          <ellipse cx="80" cy="110" rx="40" ry="22" fill="url(#skinShadow)"/>
+
+          <!-- Блик на голові -->
+          <ellipse cx="65" cy="45" rx="22" ry="18" fill="url(#headHighlight)"/>
+
+          <!-- Вуха -->
+          <ellipse cx="30" cy="75" rx="8" ry="14" fill="#4edd4e" stroke="#1a6a1a" stroke-width="1" transform="rotate(-15, 30, 75)"/>
+          <ellipse cx="130" cy="75" rx="8" ry="14" fill="#4edd4e" stroke="#1a6a1a" stroke-width="1" transform="rotate(15, 130, 75)"/>
+          <ellipse cx="31" cy="75" rx="4" ry="8" fill="#3ab83a" transform="rotate(-15, 31, 75)"/>
+          <ellipse cx="129" cy="75" rx="4" ry="8" fill="#3ab83a" transform="rotate(15, 129, 75)"/>
+
+          <!-- Очі -->
+          <g class="eye-blink" style="transform-origin: 58px 68px;">
+            <ellipse cx="58" cy="68" rx="20" ry="24" fill="url(#eyeGrad)" stroke="#1a3a10" stroke-width="1.5"/>
+            <g class="pupil-move">
+              <circle cx="60" cy="70" r="11" fill="url(#irisGrad)"/>
+              <circle cx="61" cy="71" r="6" fill="#050a02"/>
+              <circle cx="55" cy="63" r="4" fill="white" opacity="0.9"/>
+              <circle cx="65" cy="74" r="2" fill="white" opacity="0.6"/>
+            </g>
+            <path d="M38,58 Q58,48 78,58" fill="none" stroke="#1a6a1a" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+
+          <g class="eye-blink" style="transform-origin: 102px 68px;">
+            <ellipse cx="102" cy="68" rx="20" ry="24" fill="url(#eyeGrad)" stroke="#1a3a10" stroke-width="1.5"/>
+            <g class="pupil-move">
+              <circle cx="104" cy="70" r="11" fill="url(#irisGrad)"/>
+              <circle cx="105" cy="71" r="6" fill="#050a02"/>
+              <circle cx="99" cy="63" r="4" fill="white" opacity="0.9"/>
+              <circle cx="109" cy="74" r="2" fill="white" opacity="0.6"/>
+            </g>
+            <path d="M82,58 Q102,48 122,58" fill="none" stroke="#1a6a1a" stroke-width="2.5" stroke-linecap="round"/>
+          </g>
+
+          <!-- Ніс -->
+          <path d="M77,85 Q80,90 83,85" fill="none" stroke="#1a6a1a" stroke-width="1.5" stroke-linecap="round"/>
+
+          <!-- Рот -->
+          <g class="mouth-anim" style="transform-origin: 80px 100px;">
+            <ellipse cx="80" cy="100" rx="14" ry="8" fill="#1a5a1a" stroke="#0e4a0e" stroke-width="1"/>
+            <ellipse cx="80" cy="103" rx="8" ry="4" fill="#2a8a2a" opacity="0.7"/>
+            <path d="M68,97 Q74,93 80,97 Q86,93 92,97" fill="none" stroke="#e0f0d0" stroke-width="1.5" opacity="0.6"/>
+          </g>
+
+          <!-- Брови -->
+          <path d="M40,50 Q52,40 68,48" fill="none" stroke="#1a6a1a" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M92,48 Q108,40 120,50" fill="none" stroke="#1a6a1a" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- Зморшки -->
+          <path d="M35,95 Q30,100 32,108" fill="none" stroke="rgba(14,74,14,0.3)" stroke-width="1" stroke-linecap="round"/>
+          <path d="M125,95 Q130,100 128,108" fill="none" stroke="rgba(14,74,14,0.3)" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Тарілка -->
+  <div class="ufo-container">
+    <svg viewBox="0 0 420 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ufoBodyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f0d878"/>
+          <stop offset="20%" stop-color="#d4a843"/>
+          <stop offset="50%" stop-color="#b8922e"/>
+          <stop offset="80%" stop-color="#7a5e1a"/>
+          <stop offset="100%" stop-color="#4a3a10"/>
+        </linearGradient>
+        <linearGradient id="ufoTopGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f5e090"/>
+          <stop offset="100%" stop-color="#d4a843"/>
+        </linearGradient>
+        <radialGradient id="domeGrad" cx="40%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="rgba(220,240,255,0.35)"/>
+          <stop offset="40%" stop-color="rgba(180,220,255,0.18)"/>
+          <stop offset="80%" stop-color="rgba(120,180,220,0.1)"/>
+          <stop offset="100%" stop-color="rgba(80,140,180,0.05)"/>
+        </radialGradient>
+        <linearGradient id="domeShine" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="rgba(255,255,255,0.3)"/>
+          <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+        </linearGradient>
+        <linearGradient id="rimGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#c4a040"/>
+          <stop offset="100%" stop-color="#6a5020"/>
+        </linearGradient>
+        <linearGradient id="antennaGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#e0c060"/>
+          <stop offset="100%" stop-color="#a08030"/>
+        </linearGradient>
+        <filter id="lightGlow">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="lightGlowBig">
+          <feGaussianBlur stdDeviation="5" result="blur"/>
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="rgba(0,0,0,0.15)"/>
+          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+        </radialGradient>
+      </defs>
+
+      <ellipse cx="210" cy="195" rx="140" ry="8" fill="url(#shadowGrad)"/>
+
+      <path d="M50,145 Q210,175 370,145 Q370,160 210,170 Q50,160 50,145 Z"
+        fill="url(#rimGrad)" stroke="#5a4515" stroke-width="0.5" opacity="0.8"/>
+      <path d="M90,150 Q210,168 330,150" fill="none" stroke="rgba(240,216,120,0.2)" stroke-width="0.5"/>
+      <path d="M70,148 Q210,172 350,148" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="0.5"/>
+
+      <ellipse cx="210" cy="130" rx="175" ry="38" fill="url(#ufoBodyGrad)" stroke="#6a5020" stroke-width="1"/>
+
+      <ellipse cx="210" cy="115" rx="165" ry="18" fill="url(#ufoTopGrad)" opacity="0.6"/>
+
+      <path d="M60,125 Q210,105 360,125" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <path d="M80,135 Q210,118 340,135" fill="none" stroke="rgba(0,0,0,0.12)" stroke-width="0.8"/>
+      <path d="M100,142 Q210,128 320,142" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+
+      <circle cx="100" cy="122" r="2.5" fill="#c4a040" stroke="#8a6a20" stroke-width="0.5"/>
+      <circle cx="140" cy="116" r="2.5" fill="#c4a040" stroke="#8a6a20" stroke-width="0.5"/>
+      <circle cx="180" cy="113" r="2.5" fill="#c4a040" stroke="#8a6a20" stroke-width="0.5"/>
+      <circle cx="240" cy="113" r="2.5" fill="#c4a040" stroke="#8a6a20" stroke-width="0.5"/>
+      <circle cx="280" cy="116" r="2.5" fill="#c4a040" stroke="#8a6a20" stroke-width="0.5"/>
+      <circle cx="320" cy="122" r="2.5" fill="#c4a040" stroke="#8a6a20" stroke-width="0.5"/>
+
+      <g filter="url(#lightGlow)">
+        <circle class="ufo-light" cx="75" cy="128" r="5" fill="#ffcc33"/>
+        <circle class="ufo-light" cx="110" cy="120" r="5" fill="#ff5544"/>
+        <circle class="ufo-light" cx="147" cy="115" r="5" fill="#ffcc33"/>
+        <circle class="ufo-light" cx="183" cy="112" r="5" fill="#ff5544"/>
+        <circle class="ufo-light" cx="210" cy="111" r="5" fill="#ffcc33"/>
+        <circle class="ufo-light" cx="237" cy="112" r="5" fill="#ff5544"/>
+        <circle class="ufo-light" cx="273" cy="115" r="5" fill="#ffcc33"/>
+        <circle class="ufo-light" cx="310" cy="120" r="5" fill="#ff5544"/>
+        <circle class="ufo-light" cx="345" cy="128" r="5" fill="#ffcc33"/>
+      </g>
+
+      <path d="M140,115 Q140,40 210,35 Q280,40 280,115 Z"
+        fill="url(#domeGrad)" stroke="rgba(180,220,255,0.3)" stroke-width="1.5"/>
+
+      <path d="M155,100 Q155,55 195,48 L190,100 Z"
+        fill="url(#domeShine)" opacity="0.5"/>
+
+      <path d="M140,115 Q140,40 210,35 Q280,40 280,115"
+        fill="none" stroke="rgba(200,230,255,0.25)" stroke-width="2"/>
+
+      <line x1="210" y1="35" x2="210" y2="12" stroke="url(#antennaGrad)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="210" cy="10" r="4" fill="#ff5544" filter="url(#lightGlowBig)">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite"/>
+      </circle>
+
+      <rect x="55" y="130" width="18" height="8" rx="3" fill="#a08030" stroke="#6a5020" stroke-width="0.5"/>
+      <rect x="347" y="130" width="18" height="8" rx="3" fill="#a08030" stroke="#6a5020" stroke-width="0.5"/>
+
+      <circle cx="170" cy="148" r="4" fill="#5a4a1a" stroke="#3a2a0a" stroke-width="0.5"/>
+      <circle cx="250" cy="148" r="4" fill="#5a4a1a" stroke="#3a2a0a" stroke-width="0.5"/>
+    </svg>
+  </div>
+
+  <!-- Промінь -->
+  <div class="beam-container">
+    <svg viewBox="0 0 160 180" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="beamGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="rgba(212,168,67,0.15)"/>
+          <stop offset="50%" stop-color="rgba(212,168,67,0.06)"/>
+          <stop offset="100%" stop-color="rgba(212,168,67,0)"/>
+        </linearGradient>
+        <filter id="beamBlur">
+          <feGaussianBlur stdDeviation="6"/>
+        </filter>
+      </defs>
+      <path d="M50,0 Q80,180 110,0 Z" fill="url(#beamGrad)" filter="url(#beamBlur)"/>
+    </svg>
+  </div>
+
+  <!-- Текст під тарілкою -->
+  <div class="text-container">
+    <div class="ni-text">
+      <span class="ni-char">Н</span>
+      <span class="ni-char">І</span>
+      <span class="ni-char"> </span>
+      <span class="ni-char">Н</span>
+      <span class="ni-char">І</span>
+      <span class="ni-char"> </span>
+      <span class="ni-char">Н!</span>
+    </div>
+    <div class="sub-text">іноземці відмовляються коментувати</div>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  const n = Math.floor((canvas.width * canvas.height) / 2800);
+  for (let i = 0; i < n; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.max(0.2, Math.random() * 1.8),
+      a: 0.3 + Math.random() * 0.7,
+      speed: 0.002 + Math.random() * 0.008,
+      phase: Math.random() * Math.PI * 2,
+      warm: Math.random() > 0.7
+    });
+  }
+}
+
+function draw(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const s of stars) {
+    const twinkle = 0.3 + 0.7 * Math.abs(Math.sin(t * s.speed + s.phase));
+    const alpha = twinkle * s.a;
+    if (s.warm) {
+      ctx.fillStyle = 'rgba(255, 230, 180, ' + alpha + ')';
+    } else {
+      ctx.fillStyle = 'rgba(200, 220, 255, ' + alpha + ')';
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  requestAnimationFrame(draw);
+}
+
+resize();
+initStars();
+requestAnimationFrame(draw);
+window.addEventListener('resize', function() { resize(); initStars(); });
+
+var sparklesEl = document.getElementById('sparkles');
+
+function spawnSparkles() {
+  var scene = document.querySelector('.scene');
+  var rect = scene.getBoundingClientRect();
+  var cx = rect.left + rect.width / 2;
+  var cy = rect.top + 200;
+
+  for (var i = 0; i < 8; i++) {
+    var el = document.createElement('div');
+    el.className = 'sparkle';
+    var ox = (Math.random() - 0.5) * 280;
+    var oy = Math.random() * 40 - 20;
+    el.style.left = (cx + ox) + 'px';
+    el.style.top = (cy + oy) + 'px';
+    var size = 2 + Math.random() * 5;
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.animationDelay = (Math.random() * 5) + 's';
+    var isGold = Math.random() > 0.4;
+    if (isGold) {
+      el.style.background = 'hsl(' + (42 + Math.random() * 15) + ', 90%, ' + (60 + Math.random() * 20) + '%)';
+      el.style.boxShadow = '0 0 ' + (size * 2) + 'px hsl(45, 90%, 65%)';
+    } else {
+      el.style.background = 'hsl(' + (110 + Math.random() * 20) + ', 70%, ' + (50 + Math.random() * 20) + '%)';
+      el.style.boxShadow = '0 0 ' + (size * 2) + 'px hsl(120, 70%, 55%)';
+    }
+    sparklesEl.appendChild(el);
+    (function(e) {
+      setTimeout(function() { e.remove(); }, 10000);
+    })(el);
+  }
+}
+
+spawnSparkles();
+setInterval(spawnSparkles, 3000);
+</script>
+</body>
+</html>
