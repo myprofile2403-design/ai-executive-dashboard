@@ -81,7 +81,10 @@ export function TelegramProvider({ children }: { children: React.ReactNode }) {
       body: JSON.stringify({ password }),
     })
       .then(async (res) => {
-        if (!res.ok) throw new Error('Неправильний пароль')
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Неправильний пароль')
+        }
         return res.json()
       })
       .then(({ token, user }) => {
