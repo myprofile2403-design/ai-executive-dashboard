@@ -38,8 +38,15 @@ export function TelegramProvider({ children }: { children: React.ReactNode }) {
     if (isTelegramWebApp()) {
       // TELEGRAM SILENT AUTH
       const tg = (window as any).Telegram?.WebApp
-      if (!tg || !tg.initData) {
-        setAuth({ status: 'error', error: 'Missing Telegram initData' })
+      
+      // If we are in a normal browser, Telegram script loads but platform is 'unknown' and initData is empty.
+      if (!tg || (tg.platform === 'unknown' && !tg.initData)) {
+        setAuth({ status: 'web_auth_required' })
+        return
+      }
+
+      if (!tg.initData) {
+        setAuth({ status: 'error', error: 'Missing Telegram initData (Open this inside Telegram)' })
         return
       }
 
