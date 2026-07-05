@@ -79,3 +79,21 @@ Stage Summary:
 - Expenses are visually grouped into a sector-based pie chart in the dashboard
 - Work hours are tracked and aggregated over day/week/month in a new dedicated "Робочі години" view
 - Bot/Agent behavior and silent authorization configured via updated n8n JSON file
+
+---
+Task ID: 4
+Agent: Claude Code
+Task: Fix supabase-pooler crash-loop and rotate the Postgres password
+
+Work Log:
+- Diagnosed `supabase-pooler` (supavisor) container stuck in a crash-loop (~1300 restarts) with `FATAL 28P01 invalid_password for user "supabase_admin"`
+- Root cause: pooler container had a stale password baked into its env from container creation, while `/root/supabase/docker/.env` still held the untouched `.env.example` placeholder password, which was the DB's actual live password
+- Fix step 1: recreated the pooler container (`docker compose up -d --no-deps supavisor`) so it re-read `.env` — resolved the crash-loop
+- Fix step 2 (password hardening): generated a new random 32-char password, applied it via `ALTER ROLE ... WITH PASSWORD` to all DB roles that share it (`postgres`, `supabase_admin`, `supabase_auth_admin`, `authenticator`, `supabase_storage_admin`), updated `POSTGRES_PASSWORD` in `.env`, then recreated the consumer containers (`auth`, `rest`, `realtime`, `storage`, `meta`, `functions`, `supavisor`)
+- Verified all Supabase containers healthy, no auth errors in logs, `GET /rest/v1/events` via Kong returns 200
+- Confirmed n8n and the dashboard are unaffected — they talk to Supabase over the REST API (JWT keys), not a direct Postgres password
+- Old `.env` backed up at `/root/supabase/docker/.env.bak.20260705140438` (holds the now-invalidated old password)
+
+Stage Summary:
+- `supabase-pooler` is stable and healthy
+- Postgres password rotated from the default placeholder to a real secret across every role/service that uses it
