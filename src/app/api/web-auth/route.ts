@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 
 const WEB_PASSWORD = process.env.WEB_PASSWORD || '1234';
 const SUPABASE_JWT_SECRET = process.env.SUPABASE_JWT_SECRET;
-const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || '0';
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,16 +16,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
     }
 
-    // Generate a secure Supabase JWT containing the admin's telegram_chat_id
+    // Generate a secure Supabase JWT listing every family member's chat id
+    const familyIds = (process.env.ALLOWED_TELEGRAM_IDS || '').split(',').map(id => id.trim()).filter(Boolean);
     const payload = {
       role: 'authenticated',
-      telegram_chat_id: ADMIN_CHAT_ID,
+      family_ids: familyIds,
       exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 30), // 30 days expiration
     };
 
     const token = jwt.sign(payload, SUPABASE_JWT_SECRET);
 
-    return NextResponse.json({ token, user: { id: ADMIN_CHAT_ID } });
+    return NextResponse.json({ token, user: { id: familyIds[0] || '0' } });
   } catch (error: any) {
     console.error('Web Authentication error:', error);
     return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
