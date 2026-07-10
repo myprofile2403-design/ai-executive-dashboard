@@ -97,3 +97,30 @@ Work Log:
 Stage Summary:
 - `supabase-pooler` is stable and healthy
 - Postgres password rotated from the default placeholder to a real secret across every role/service that uses it
+
+---
+Task ID: 5
+Agent: Claude Code
+Task: Fix Sonia's expense-saving tool (save_event), tighten stack access control, add Supabase Studio
+
+Work Log:
+- Diagnosed why the `events` table was permanently empty despite the bot running for weeks: the n8n instance (v2.27.3) uses a newer AI-tool parameter mechanism for `toolHttpRequest` nodes — a `{placeholder}` text-substitution system driven by an explicit "Placeholder Definitions" list, not the legacy `$fromAI(...)` JS-call scanning the workflow was originally built with. `Save Event`'s Placeholder Definitions list was empty, so the LLM saw a tool with zero usable parameters.
+- Also found the node's `apikey`/`Authorization` headers defaulted to `valueProvider: "modelRequired"` ("filled by the AI") instead of `"fieldValue"` (static) — a static secret was being silently treated as an AI-fillable field and ignored.
+- Rebuilt `Save Event` (and `Query Events`) using the correct `{placeholder}` + `placeholderDefinitions` schema, with headers explicitly set to `fieldValue` and the real `$env.SUPABASE_KEY`.
+- Hit and fixed a second bug once the tool started actually firing: Postgres rejected `due_datetime`/`event_datetime` as `""` (invalid for `timestamptz`) — switched those two placeholders to raw JSON type so the model can emit literal `null` instead of an empty string.
+- Verified end-to-end with a real Telegram message: `save_event` now correctly inserts rows into `events`.
+- Added business rule at user's request: expenses categorized `project = 'стройка'` (construction materials reimbursed by the client) are now excluded from the personal expense totals shown by the Telegram menu ("За сьогодні"/"За місяць"/"Статистика" — added `project=neq.стройка`), and `Query Events` gained project + date-range filters so the agent can answer "скільки я витратив на матеріал за період X" as a separate query.
+- Deployed every workflow change via `n8n export:workflow` → patch JSON → `import:workflow` → `publish:workflow` → container restart (no working n8n UI automation available in this session).
+- Found and cleaned up an operational hazard: the user had the n8n editor open in a browser tab while I was publishing fixes via CLI; his tab's autosave silently overwrote my published changes at least once (lost-update race). No code fix — just coordination going forward (don't edit the canvas while Claude is deploying).
+- Also discovered n8n execution history was being read stale: `docker cp` of just `database.sqlite` misses recent writes sitting in the SQLite WAL (`database.sqlite-wal`/`-shm`) — must copy all three files together for a consistent read.
+- Removed Caddy `basic_auth` from `n8n-accaisona.site` (n8n has its own login now, was redundant) — n8n owner password was also reset (forgotten) via a direct bcrypt write to the `user` table.
+- Added Caddy `basic_auth` (back) to `files.n8n-accaisona.site` (was previously intentionally open — user reversed that).
+- Exposed Supabase Studio at `studio.n8n-accaisona.site` (published container port 3033, added Caddy route + basic_auth, user added the DNS A record) so the user can visually inspect the DB himself.
+- All new credentials logged in the private `docs` repo's `passwords.md`.
+
+Stage Summary:
+- `save_event` tool actually saves data now — verified live via Telegram
+- `query_events` supports category + date-range filtering
+- "стройка" (client-reimbursed) expenses tracked separately from personal expense totals
+- Supabase Studio reachable for manual DB inspection
+- n8n access simplified to its own login; files/browser/studio subdomains behind Caddy basic_auth
