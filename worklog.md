@@ -124,3 +124,24 @@ Stage Summary:
 - "стройка" (client-reimbursed) expenses tracked separately from personal expense totals
 - Supabase Studio reachable for manual DB inspection
 - n8n access simplified to its own login; files/browser/studio subdomains behind Caddy basic_auth
+
+---
+Task ID: 6
+Agent: Claude Code
+Task: Fix save_event regression from today's earlier "json" placeholder type, diagnose "bot not responding", deploy OmniRoute AI gateway
+
+Work Log:
+- User reported the bot stopped saving records again. Traced execution history (`execution_data` table, correctly reading `.sqlite`/`-wal`/`-shm` together) and found today's earlier fix for `event_datetime`/`due_datetime` (setting their placeholder type to `"json"`) was itself broken: read n8n's `toolHttpRequest` source (`ToolHttpRequest/utils.js`, `makeParameterZodSchema`) and confirmed type `"json"` compiles to a Zod schema of `z.record(z.any())` — i.e. it hard-requires a plain object. The agent was sending a date string or the literal `null`, and both got rejected by schema validation before the HTTP call ever fired (`Expected object, received string/null`).
+- Fix: rebuilt `Save Event` from a single raw-JSON body template (`specifyBody: "json"`) to per-field key/value mode (`specifyBody: "keypair"`). `event_datetime`/`due_datetime` are now `valueProvider: "modelOptional"` with placeholder type `"string"` — when the model has no date it simply omits the parameter (rather than sending `null`), the key disappears from the outgoing JSON body entirely, and Postgres applies its normal column default (NULL). Also fixes a latent bug where a title/text containing a `"` character would have corrupted the old raw-text JSON template.
+- Deployed via the standard cycle (`export:workflow` → patch → `import:workflow` → `publish:workflow` → container restart) and confirmed the container came back up clean.
+- Separately, user then reported "wrote to the bot, no response" — traced to a *different*, unrelated fault: Google Gemini's free-tier daily quota (20 requests/day/project for `gemini-2.5-flash`) was exhausted. Both `Fast Chat Model` (intent classification) and `Smart Chat Model` (the actual agents) share one Gemini credential, and every message burns at least 2 requests, so the cap is hit fast — confirmed via the exact `429 Quota exceeded` error the user pasted, matching a failed execution at the same timestamp.
+- Flagged, but did not yet fix, a further pre-existing issue found while investigating: `Query Events` (expense/task lookup) still uses the legacy `$fromAI(...)` inline-expression mechanism, which this n8n version doesn't wire up for `toolHttpRequest` nodes, and its `apikey`/`Authorization` headers aren't set to `fieldValue` — so expense/statistics queries are likely also silently broken. Left for a follow-up session.
+- At user's request, deployed **OmniRoute** (self-hosted OpenAI-compatible multi-provider AI gateway, github.com/diegosouzapw/OmniRoute, MIT) as a new Docker service in `/root/ai-assistant/docker-compose.yml`, to eventually front Gemini (and other providers) for the bot and dodge single-provider free-tier ceilings like the one above. Added Caddy route `omniroute.n8n-accaisona.site` with the same basic_auth as studio/files (dashboard holds provider credentials, must not be open). DNS A record added by the user; Let's Encrypt cert issued successfully on the second Caddy restart (first attempt raced ahead of DNS propagation). Verified reachable and returning 401 without auth.
+- Provider connection inside the OmniRoute dashboard (Gemini etc.) and rewiring the n8n `Fast Chat Model`/`Smart Chat Model` credentials to point at it instead of Google directly are left for the user / a follow-up session.
+- Logged OmniRoute's URL and Caddy basic_auth in the private `docs` repo's `passwords.md`.
+
+Stage Summary:
+- `save_event` fixed properly this time (keypair body mode, optional-omit instead of null) — previous same-day fix was incomplete
+- Root cause of "bot not responding" identified as Gemini free-tier daily quota exhaustion, not a workflow bug
+- `Query Events` confirmed still broken (legacy `$fromAI` + missing header auth) — open follow-up
+- OmniRoute AI gateway deployed and reachable, ready for the user to connect providers
