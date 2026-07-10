@@ -1,0 +1,2840 @@
+[
+  {
+    "updatedAt": "2026-06-22T20:32:12.000Z",
+    "createdAt": "2026-06-20T13:07:43.836Z",
+    "id": "onmJT10ta0lra5ry",
+    "name": "AI Assistant Соня v8",
+    "description": null,
+    "active": false,
+    "isArchived": true,
+    "nodes": [
+      {
+        "parameters": {
+          "inputSource": "passthrough"
+        },
+        "type": "n8n-nodes-base.executeWorkflowTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          31104,
+          24080
+        ],
+        "id": "e1d719e0-f568-4cd5-91db-7337a799ae29",
+        "name": "When Executed by Another Workflow"
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "calendar": {
+            "__rl": true,
+            "value": "slavikkoxan1998@gmail.com",
+            "mode": "list",
+            "cachedResultName": "slavikkoxan1998@gmail.com"
+          },
+          "limit": 10,
+          "timeMin": "={{ $fromAI(\"dayBefore\",\"the day before the date the user requested\") }}",
+          "timeMax": "={{ $fromAI(\"dayAfter\",\"the day after the date the user requested\") }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          31632,
+          24464
+        ],
+        "id": "b847453b-d950-470a-a767-4a2e52e7d7aa",
+        "name": "Get Events",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "QVxVmqnWVHY4yypu",
+            "name": "SK Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "calendar": {
+            "__rl": true,
+            "value": "primary",
+            "mode": "list",
+            "cachedResultName": "primary"
+          },
+          "start": "={{ $fromAI(\"eventStart\") }}",
+          "end": "={{ $fromAI(\"eventEnd\") }}",
+          "additionalFields": {
+            "attendees": [],
+            "summary": "={{ $fromAI(\"eventTitle\") }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          31744,
+          24464
+        ],
+        "id": "22d75148-d67c-4884-a84c-10c4c67ef699",
+        "name": "Create Event",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "QVxVmqnWVHY4yypu",
+            "name": "SK Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "calendar": {
+            "__rl": true,
+            "value": "primary",
+            "mode": "list",
+            "cachedResultName": "primary"
+          },
+          "start": "={{ $fromAI(\"eventStart\") }}",
+          "end": "={{ $fromAI(\"eventEnd\") }}",
+          "additionalFields": {
+            "attendees": [
+              "={{ $fromAI(\"eventAttendeeEmail\") }}"
+            ],
+            "summary": "={{ $fromAI(\"eventTitle\") }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          31856,
+          24464
+        ],
+        "id": "7756b643-e78b-4b92-93cb-25623789ffde",
+        "name": "Create Event with Attendee",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "QVxVmqnWVHY4yypu",
+            "name": "SK Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "calendar": {
+            "__rl": true,
+            "value": "primary",
+            "mode": "list",
+            "cachedResultName": "primary"
+          },
+          "eventId": "={{ $fromAI(\"eventID\") }}",
+          "updateFields": {
+            "end": "={{ $fromAI(\"endTime\") }}",
+            "start": "={{ $fromAI(\"startTime\") }}"
+          }
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          31968,
+          24464
+        ],
+        "id": "7552229a-703c-4493-93d4-25e4e0af1666",
+        "name": "Update Event",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "QVxVmqnWVHY4yypu",
+            "name": "SK Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "delete",
+          "calendar": {
+            "__rl": true,
+            "value": "primary",
+            "mode": "list",
+            "cachedResultName": "primary"
+          },
+          "eventId": "={{ $fromAI(\"eventID\") }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleCalendarTool",
+        "typeVersion": 1.3,
+        "position": [
+          32080,
+          24464
+        ],
+        "id": "086ec23d-9801-4fea-8ae3-6b80e4dfcfad",
+        "name": "Delete Event",
+        "credentials": {
+          "googleCalendarOAuth2Api": {
+            "id": "QVxVmqnWVHY4yypu",
+            "name": "SK Google Calendar account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "s1",
+                "name": "response",
+                "value": "={{$json.output}}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "31b74c1c-86e9-44a4-8a08-67b003a7c5bb",
+        "name": "Success",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          32304,
+          23968
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "e1",
+                "name": "response",
+                "value": "Unable to perform calendar action. Please try again.",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "1e3cfeac-2ee4-4d2d-81ef-58f1a843b3e6",
+        "name": "Try Again",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          32304,
+          24128
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.query }}",
+          "options": {
+            "systemMessage": "=# Overview\nТи асистент календаря. Твої обов'язки включають створення, отримання, оновлення та видалення подій у календарі користувача.\n\n## Інструменти управління календарем\n- **Create Event with Attendee** — Використовуй, коли подія включає іншого учасника (є email).\n- **Create Event** — Використовуй для подій без інших учасників та нагадувань.\n- **Get Events** — Використовуй для отримання розкладу та подій з календаря.\n- **Delete Event** — Використовуй для видалення події. Спочатку обов'язково виклич Get Events, щоб отримати ID події.\n- **Update Event** — Використовуй для оновлення події. Спочатку обов'язково виклич Get Events, щоб отримати ID події.\n\n## Правила використання інструментів\n1. Для простих розмовних повідомлень (наприклад: 'привіт', 'як справи', 'дякую') НЕ викликай жодних інструментів. Просто відповідай самостійно текстовим повідомленням українською мовою.\n2. Викликай інструменти створення/зміни подій ТІЛЬКИ тоді, коли користувач прямо дає вказівку запланувати, змінити або видалити подію.\n3. Якщо користувач запитує про розклад, спочатку виклич Get Events.\n4. Якщо тривалість події не вказана, за замовчуванням встановлюй 1 годину.\n5. Для нагадувань створюй коротку подію тривалістю 5 хвилин із текстом нагадування у полі Summary.\n6. Відповідай українською мовою, коротко і по суті.\n\n## Поточний час\nПоточна дата і час: {{ $now }}"
+          }
+        },
+        "id": "e09f0fa9-6474-4ff3-b3b0-7efc84ca76cf",
+        "name": "Calendar Agent1",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.6,
+        "position": [
+          31632,
+          24080
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "model": "openai/o4-mini",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "typeVersion": 1,
+        "position": [
+          29056,
+          24240
+        ],
+        "id": "850c6d44-2f20-4742-95b8-b025ca686df2",
+        "name": "Fast Chat Model",
+        "credentials": {
+          "openRouterApi": {
+            "id": "AV1aHuhEZTwjJhlA",
+            "name": "OpenRouter account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "model": "google/gemini-2.5-pro",
+          "options": {}
+        },
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+        "typeVersion": 1,
+        "position": [
+          26912,
+          23280
+        ],
+        "id": "fc3e68a6-06fb-4d95-9549-b8844476da95",
+        "name": "Smart Chat Model",
+        "credentials": {
+          "openRouterApi": {
+            "id": "AV1aHuhEZTwjJhlA",
+            "name": "OpenRouter account"
+          }
+        }
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.4,
+        "position": [
+          31392,
+          24480
+        ],
+        "id": "640f6044-cb6b-4f65-9c63-71e46c75befa",
+        "name": "Simple Memory"
+      },
+      {
+        "parameters": {
+          "updates": [
+            "message",
+            "callback_query"
+          ],
+          "additionalFields": {}
+        },
+        "id": "e0ec8d52-b9ea-47b9-9ace-b29a0669d745",
+        "name": "Telegram Trigger",
+        "type": "n8n-nodes-base.telegramTrigger",
+        "typeVersion": 1.1,
+        "position": [
+          25536,
+          22928
+        ],
+        "webhookId": "telegram-webhook-1",
+        "credentials": {
+          "telegramApi": {
+            "id": "cXqeQpOUW6K5yHW2",
+            "name": "Telegram Zarobitok"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/interaction_logs",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"telegram_chat_id\": \"{{ $('Telegram Trigger').item.json.message.chat.id }}\" }",
+          "options": {}
+        },
+        "id": "475e5d4c-c020-4d18-9ba9-4a809ecec526",
+        "name": "Log Interaction",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26416,
+          22064
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/interaction_logs?telegram_chat_id=eq.{{ $('Telegram Trigger').item.json.message.chat.id }}&created_at=gte.{{ (new Date(Date.now() - 60000)).toISOString() }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$vars.SUPABASE_KEY}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "1b5cad3f-38bc-4dd3-8577-09f1a2a4f8b4",
+        "name": "Get Interaction Count",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26608,
+          22064
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ parseInt($json.headers['content-range'].split('/')[1]) || 1 }}",
+                "rightValue": 10,
+                "operator": {
+                  "type": "number",
+                  "operation": "gt",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "58f808ec-1b28-47b6-9321-cd82b3033552",
+        "name": "Check Rate Limit",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          26784,
+          22064
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"chat_id\": \"{{ $('Telegram Trigger').item.json.message.chat.id }}\", \"text\": \"⚠️ <b>Ви перевищили ліміт запитів!</b>\\nМаксимум 10 повідомлень на хвилину. Будь ласка, зачекайте.\", \"parse_mode\": \"HTML\" }",
+          "options": {}
+        },
+        "id": "bd4337dd-716e-47e7-a1c3-612ee29cf458",
+        "name": "Send Rate Limit Message",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27104,
+          21840
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.message.voice.file_id }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "string",
+                        "operation": "exists",
+                        "singleValue": true
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Voice"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.message.text }}",
+                      "rightValue": "",
+                      "operator": {
+                        "type": "string",
+                        "operation": "exists",
+                        "singleValue": true
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "Text"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "6eacf3e8-f777-4495-8861-13327eaa9f0f",
+        "name": "Switch",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          27104,
+          22352
+        ]
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "fileId": "={{ $json.message.voice.file_id }}",
+          "additionalFields": {}
+        },
+        "id": "f8351804-3335-4ad8-b899-0c04ba86a5d5",
+        "name": "Download File",
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          27360,
+          22064
+        ],
+        "webhookId": "telegram-webhook-2",
+        "credentials": {
+          "telegramApi": {
+            "id": "cXqeQpOUW6K5yHW2",
+            "name": "Telegram Zarobitok"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{$vars.WHISPER_SERVER_URL || 'http://whisper:9000'}}/transcribe",
+          "sendBody": true,
+          "contentType": "multipart-form-data",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "parameterType": "formBinaryData",
+                "name": "file"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "0cc55c21-dc44-489d-ac80-d058add990a6",
+        "name": "Local Whisper",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          27568,
+          22064
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "text",
+                "value": "={{ $json.text }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "source_type",
+                "value": "voice",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "c767c675-7761-41cc-969e-faa0e522e842",
+        "name": "Set Transcript",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          27760,
+          22064
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "a1",
+                "name": "text",
+                "value": "={{ $json.message.text }}",
+                "type": "string"
+              },
+              {
+                "id": "a2",
+                "name": "source_type",
+                "value": "text",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "42fcf63a-5ef6-4f5a-92f0-96d1eda1add9",
+        "name": "Set Text",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          27376,
+          22368
+        ]
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          30944,
+          23520
+        ],
+        "id": "705b1926-3d5b-49d3-952c-04074cccec42",
+        "name": "Calendar Memory"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          30928,
+          23296
+        ],
+        "id": "02d72a04-21a6-4afe-bdb8-4b8461c26af1",
+        "name": "Expense Memory"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          30912,
+          22672
+        ],
+        "id": "f347e8ea-f6cb-4454-a3e2-e56cf00b7c3f",
+        "name": "Task Memory"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          30912,
+          22864
+        ],
+        "id": "88d9de82-358c-4815-9f75-2a619fdf4692",
+        "name": "Search Memory"
+      },
+      {
+        "parameters": {
+          "sessionIdType": "customKey",
+          "sessionKey": "={{ $('Telegram Trigger').item.json.message.chat.id }}"
+        },
+        "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+        "typeVersion": 1.3,
+        "position": [
+          30928,
+          23072
+        ],
+        "id": "3903db92-877b-409c-8c6a-b2654372fd65",
+        "name": "Chat Memory"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/events",
+          "sendHeaders": true,
+          "parametersHeaders": {
+            "values": [
+              {}
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (function() { const chatId = $('Telegram Trigger').item?.json?.message?.chat?.id; if (!chatId) throw new Error(\"No Telegram chat ID found in trigger!\"); return JSON.stringify({ type: $json.type, title: $json.title, amount: $json.amount || null, currency: $json.currency || null, person: $json.person || null, project: $json.project || null, event_datetime: $json.event_datetime || null, due_datetime: $json.due_datetime || null, status: $json.status || 'open', metadata: {}, raw_text: $json.raw_text, transcript: $json.raw_text, telegram_chat_id: String(chatId), telegram_message_id: String($('Telegram Trigger').item?.json?.message?.message_id || ''), audio_file_id: null, source: 'telegram', source_type: $('Set Text').first()?.json?.source_type || $('Set Transcript').first()?.json?.source_type || 'text' }); })() }}"
+        },
+        "id": "a020a6cf-e1f4-4af2-9e42-f7d493b56593",
+        "name": "Save Event",
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          29760,
+          24496
+        ]
+      },
+      {
+        "parameters": {
+          "name": "calendarAgent",
+          "description": "Call this tool for any calendar action: create events, get schedule, delete events, update events, set reminders.",
+          "workflowId": {
+            "__rl": true,
+            "value": "CALENDAR_WORKFLOW_ID",
+            "mode": "id"
+          },
+          "workflowInputs": {
+            "mappingMode": "defineBelow",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+        "typeVersion": 2,
+        "position": [
+          30160,
+          24496
+        ],
+        "id": "3c19330b-c999-4d6a-9442-7a574fb82c8f",
+        "name": "Calendar Agent"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://api.tavily.com/search",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ api_key: $vars.TAVILY_API_KEY, query: $json.searchTerm, search_depth: 'basic', include_answer: true, topic: 'general', include_raw_content: true, max_results: 5 }) }}",
+          "placeholderDefinitions": {
+            "values": [
+              {
+                "name": "searchTerm",
+                "description": "What the user has requested to search the internet for",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          29872,
+          24496
+        ],
+        "id": "08864510-bcb7-4520-b9c2-83c1a50b4916",
+        "name": "Tavily"
+      },
+      {
+        "parameters": {},
+        "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+        "typeVersion": 1,
+        "position": [
+          29968,
+          24496
+        ],
+        "id": "0a780dad-82f5-452b-a216-62c22b5d2f6d",
+        "name": "Calculator"
+      },
+      {
+        "parameters": {
+          "url": "={{ (function() { const chatId = $('Telegram Trigger').item?.json?.message?.chat?.id; if (!chatId) throw new Error(\"No Telegram chat ID found in trigger!\"); const params = [\"select=id,type,title,amount,currency,person,project,event_datetime,due_datetime,status,created_at\", \"order=created_at.desc\", \"limit=100\", \"telegram_chat_id=eq.\" + chatId]; if ($json.filter_type) params.push(\"type=eq.\" + $json.filter_type); if ($json.filter_status) params.push(\"status=eq.\" + $json.filter_status); return $vars.SUPABASE_URL + \"/rest/v1/events?\" + params.join(\"&\"); })() }}",
+          "sendHeaders": true,
+          "parametersHeaders": {
+            "values": [
+              {}
+            ]
+          },
+          "placeholderDefinitions": {
+            "values": [
+              {
+                "name": "filter_type",
+                "description": "Event type filter (expense, task, meeting, reminder, note, or empty for all)",
+                "type": "string"
+              },
+              {
+                "name": "filter_status",
+                "description": "Status filter (open, done, scheduled, or empty for all)",
+                "type": "string"
+              }
+            ]
+          }
+        },
+        "id": "b4a220b5-5d80-4c05-9282-621948cf7267",
+        "name": "Query Events",
+        "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+        "typeVersion": 1.1,
+        "position": [
+          29664,
+          24496
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: $json.output, parse_mode: 'HTML' }) }}",
+          "options": {}
+        },
+        "id": "7f1b5c43-5339-4fc4-8045-b71f8e4bfecc",
+        "name": "Response + Mini App",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4,
+        "position": [
+          31984,
+          22944
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const text = (($json.text || '') + '').toLowerCase().trim();\n\nlet route = 'llm';\n\n// 1. Calendar\nif (/календар|зустріч|план|розклад/i.test(text)) {\n  route = 'calendar';\n}\n// 2. Expense\nelse if (/витрати|витратив|кошт|грн|czk|usd|eur|грош|купив|ціна|заплатив|робоч|годин/i.test(text)) {\n  route = 'expense';\n}\n// 3. Task\nelse if (/задач|список|справ|нагадай|нотат|запис/i.test(text)) {\n  route = 'task';\n}\n// 4. Search\nelse if (/знайди|пошук|інтернет|гугл|google/i.test(text)) {\n  route = 'search';\n}\n// 5. Chat\nelse if (/привіт|добрий|hello|hi|дякую|\\/start/i.test(text)) {\n  route = 'chat';\n}\n\nreturn { route, text };"
+        },
+        "id": "8fe61272-1b57-4089-9c06-e90c815f7a35",
+        "name": "Rule Classifier",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          28176,
+          21536
+        ]
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "rightValue": "llm",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "de10ddc0-a408-4963-920d-9df8f106d832"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "llm"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "rightValue": "task",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "ba5aa735-25b6-491f-8ea3-01a6fff83260"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "task"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "rightValue": "search",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "0a7059b8-c39d-4564-aeb1-e02c69bd739e"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "search"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "rightValue": "chat",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "6ff5c72c-cf8a-4d36-8354-0a438c423f5b"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "chat"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "rightValue": "expense",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "5b47089e-740d-4d57-8129-45512b31ca08"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "expense"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.route }}",
+                      "rightValue": "calendar",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "3eb20489-7cac-43e8-a4c7-46e9d2b54e8d"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "calendar"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "33792ab7-eaf0-48a7-b866-018b0795a149",
+        "name": "Hybrid Router Switch",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          28336,
+          21472
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $json.text }}",
+          "options": {
+            "systemMessage": "You are an Intent Classifier. Your only job is to categorize the user's message into exactly one of these words:\n- 'calendar' (requests to schedule, delete, check calendar events or schedule)\n- 'expense' (requests about money, spending, income, debt, work hours, expense reporting, calculations)\n- 'task' (requests about tasks, reminders, notes, or lists of tasks/notes)\n- 'search' (requests for internet search, current weather, web search, info outside user's context)\n- 'chat' (simple greetings, chit-chat, conversation, politeness)\n\nOutput ONLY the single word representing the category. Do not include any other text, punctuation, or formatting."
+          }
+        },
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          29056,
+          21472
+        ],
+        "id": "4502eab7-e5fa-40ad-b4a4-8fd870b126eb",
+        "name": "Intent Router"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.output.trim().toLowerCase().replace(/[^a-z]/g, '') }}",
+                      "rightValue": "task",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "a67736c4-d558-4e48-8a57-0b16a7825ca0"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "task"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.output.trim().toLowerCase().replace(/[^a-z]/g, '') }}",
+                      "rightValue": "search",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "0398e8f3-d7db-4767-a5da-f069451d5ff5"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "search"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.output.trim().toLowerCase().replace(/[^a-z]/g, '') }}",
+                      "rightValue": "chat",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "dca89356-7818-44fe-abea-7bd2ba4777d9"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "chat"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.output.trim().toLowerCase().replace(/[^a-z]/g, '') }}",
+                      "rightValue": "expense",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "05b8e471-19e7-430f-9a37-2a0b9edd0862"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "expense"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.output.trim().toLowerCase().replace(/[^a-z]/g, '') }}",
+                      "rightValue": "calendar",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "dde005cf-ab12-4199-895d-c84e1815f91a"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "calendar"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "97d87c85-cf6e-44ef-947c-b983bca503a0",
+        "name": "LLM Route Switch",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          28816,
+          22880
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Set Text').first()?.json?.text || $('Set Transcript').first()?.json?.text }}",
+          "options": {
+            "systemMessage": "=# Опис\nТи фінансовий асистент. Твої обов'язки — записувати витрати, доходи, борги та робочі години користувача, а також рахувати статистику.\n\n## Інструменти\n- **save_event**: Зберігає запис (expense, income, debt_given, debt_received, work).\n- **query_events**: Шукає запис у базі даних.\n- **Calculator**: Калькулятор для розрахунків.\n- **calendarAgent**: Google Calendar для додавання подій.\n\n## Правила\n- Для кожної нової витрати або отриманих грошей обов'язково викликай `save_event`.\n- Для підрахунку загальної суми використовуй `query_events` та калькулятор.\n- Валюта за замовчуванням CZK.\n- Обов'язково класифікуй витрату в параметр project як одну з категорій: 'дом (їда)', 'одяг', 'інструменти', 'топливо', 'для себе'. Якщо жодна не підходить, використовуй 'Інше'.\n- Відповідай українською мовою, коротко і чітко.\n\n## Поточний час\n{{ $now }}"
+          }
+        },
+        "id": "ab338d2c-def6-4318-af3a-749d27a9633f",
+        "name": "Expense Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          30544,
+          23184
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Set Text').first()?.json?.text || $('Set Transcript').first()?.json?.text }}",
+          "options": {
+            "systemMessage": "=# Опис\nТи асистент з управління задачами та нотатками. Твої обов'язки — записувати задачі, нагадування та нотатки користувача, а також показувати списки справ.\n\n## Інструменти\n- **save_event**: Зберігає запис (task, reminder, note).\n- **query_events**: Шукає запис у базі даних.\n- **calendarAgent**: Google Calendar для встановлення подій.\n\n## Правила\n- Для нових задач, нагадувань чи думок користувача викликай `save_event`.\n- Для відображення списку відкритих задач або нотаток викликай `query_events`.\n- Відповідай українською мовою, коротко і чітко.\n\n## Поточний час\n{{ $now }}"
+          }
+        },
+        "id": "3240f54c-513b-4961-a8f2-d58452bb8b49",
+        "name": "Task Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          30544,
+          22560
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Set Text').first()?.json?.text || $('Set Transcript').first()?.json?.text }}",
+          "options": {
+            "systemMessage": "=# Overview\nТи асистент календаря. Твої обов'язки включають створення, отримання, оновлення та видалення подій у календарі користувача.\n\n## Інструменти управління календарем\n- **Create Event with Attendee** — Використовуй, коли подія включає іншого учасника (є email).\n- **Create Event** — Використовуй для подій без інших учасників та нагадувань.\n- **Get Events** — Використовуй для отримання розкладу та подій з календаря.\n- **Delete Event** — Використовуй для видалення події. Спочатку обов'язково виклич Get Events, щоб отримати ID події.\n- **Update Event** — Використовуй для оновлення події. Спочатку обов'язково виклич Get Events, щоб отримати ID події.\n\n## Правила використання інструментів\n1. Для простих розмовних повідомлень (наприклад: 'привіт', 'як справи', 'дякую') НЕ викликай жодних інструментів. Просто відповідай самостійно текстовим повідомленням українською мовою.\n2. Викликай інструменти створення/зміни подій ТІЛЬКИ тоді, коли користувач прямо дає вказівку запланувати, змінити або видалити подію.\n3. Якщо користувач запитує про розклад, спочатку виклич Get Events.\n4. Якщо тривалість події не вказана, за замовчуванням встановлюй 1 годину.\n5. Для нагадувань створюй коротку подію тривалістю 5 хвилин із текстом нагадування у полі Summary.\n6. Відповідай українською мовою, коротко і по суті.\n\n## Поточний час\nПоточна дата і час: {{ $now }}"
+          }
+        },
+        "id": "9ca996ae-4968-4c71-bd39-011ec03d665c",
+        "name": "Calendar Agent Main",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          30544,
+          23408
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Set Text').first()?.json?.text || $('Set Transcript').first()?.json?.text }}",
+          "options": {
+            "systemMessage": "=# Опис\nТи асистент з пошуку в інтернеті. Твоє завдання — знайти актуальну інформацію на запит користувача.\n\n## Інструменти\n- **tavily_search**: Пошук в інтернеті.\n\n## Правила\n- Шукай інформацію тільки в авторитетних джерелах.\n- Відповідай українською мовою, коротко і чітко.\n\n## Поточний час\n{{ $now }}"
+          }
+        },
+        "id": "f10721a5-61c8-429e-9228-9860456e4ae3",
+        "name": "Search Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          30544,
+          22752
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "={{ $('Set Text').first()?.json?.text || $('Set Transcript').first()?.json?.text }}",
+          "options": {
+            "systemMessage": "=# Опис\nТи дружній асистент СОНЯ. Твоє завдання — привітати користувача, підтримати розмову, відповісти на прості питання або підказати, які команди ти вмієш виконувати.\n\n## Правила\n- Спілкуйся ввічливо та невимушено.\n- Відповідай українською мовою, коротко.\n\n## Поточний час\n{{ $now }}"
+          }
+        },
+        "id": "04f1ef47-7e01-4705-bb6e-005944f33b28",
+        "name": "Chat Agent",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          30544,
+          22960
+        ],
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {},
+        "id": "26cc8836-f0b9-4d21-b887-b220a1318fc6",
+        "name": "Cron Trigger",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [
+          26320,
+          23760
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{ $vars.SUPABASE_URL }}/rest/v1/events?status=eq.open&type=eq.reminder&due_datetime=lte.{{ encodeURIComponent((new Date()).toISOString()) }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$vars.SUPABASE_KEY}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "e54f59c2-804a-410e-9c4f-8438b5a19501",
+        "name": "Get Due Reminders",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26576,
+          23760
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ (function() { if (!$json.telegram_chat_id) throw new Error(\"No chat ID stored for reminder event ID: \" + $json.id); return JSON.stringify({ chat_id: $json.telegram_chat_id, text: \"🔔 <b>Нагадування:</b>\\n\\n\" + $json.title, parse_mode: \"HTML\" }); })() }}",
+          "options": {}
+        },
+        "id": "d42b3bdd-199a-4b29-b06a-52eeaa43921e",
+        "name": "Send Telegram Reminder",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26832,
+          23760
+        ]
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.id}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Prefer",
+                "value": "return=representation"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={ \"status\": \"done\" }",
+          "options": {}
+        },
+        "id": "41b39d2b-f5a8-43a7-9040-626993abf283",
+        "name": "Mark Reminder Sent",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27072,
+          23760
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "35d6d730-5a93-42b5-b944-258bd5955010",
+        "name": "Error Trigger",
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          26320,
+          23984
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "leftValue": "={{ $('Error Trigger').item?.json?.execution?.input?.message?.chat?.id }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "0f5dfa49-63f4-4b41-99a7-c5a0cb0bfa16",
+        "name": "Check Chat ID",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          26576,
+          23984
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Error Trigger').item.json.execution.input.message.chat.id, text: \"⚠️ <b>Вибачте, сталася внутрішня помилка при обробці запиту.</b>\\nБудь ласка, спробуйте ще раз або зверніться до адміністратора.\", parse_mode: \"HTML\" }) }}",
+          "options": {}
+        },
+        "id": "b54c8a7a-3e99-4a94-8192-94e65442011b",
+        "name": "Send Error Message",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26832,
+          23968
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "28f61ffe-0a2d-470e-892b-a5bf7c68f426",
+        "name": "Cron Daily Report",
+        "type": "n8n-nodes-base.cron",
+        "typeVersion": 1,
+        "position": [
+          26320,
+          24160
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?select=telegram_chat_id",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$vars.SUPABASE_KEY}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "3337d62a-e935-4038-be48-fd3c5aaad8bf",
+        "name": "Get Active Users",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26576,
+          24160
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "const items = input;\nconst chats = new Set(items.map(item => item.json.telegram_chat_id).filter(Boolean));\nreturn Array.from(chats).map(chatId => ({ json: { telegram_chat_id: chatId } }));"
+        },
+        "id": "e311de85-f6bd-497b-ba7f-f3a99f388f82",
+        "name": "Deduplicate Users",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          26832,
+          24160
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?telegram_chat_id=eq.{{$json.telegram_chat_id}}&or=(type.eq.task,type.eq.debt_given,type.eq.meeting,type.eq.calendar,created_at.gte.{{ (new Date(Date.now() - 7*24*60*60*1000)).toISOString() }})",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "=Bearer {{$vars.SUPABASE_KEY}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "98ac677f-92e1-4a05-8a6c-5cb7fcabc586",
+        "name": "Get User Events Context",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27072,
+          24160
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "Generate report.",
+          "options": {
+            "systemMessage": "=# Опис\nТи — персональний асистент СОНЯ. Твоє завдання — сформувати щоденний ранковий звіт для користувача на основі списку подій з БД.\nОБОВ'ЯЗКОВО Дотримуйся ТОЧНО такої структури і використовуй HTML-теги для жирного шрифту:\n\n🌅 Доброго ранку!\n📅 Сьогодні: [Поточна дата]\n\n🎯 <b>Завдання:</b>\n[Переліч усі відкриті задачі типу 'task' зі статусом 'open', які не мають due_datetime, АБО їх due_datetime на сьогодні чи майбутнє]\n• [Задача 1]\n• [Задача 2]\n(Якщо немає - напиши \"Немає активних задач на сьогодні\")\n\n📆 <b>Події:</b>\n[Переліч події типу 'meeting' або 'calendar' на сьогодні]\n• [Подія 1]\n\n⚠️ <b>Прострочено:</b>\n[Переліч відкриті задачі типу 'task' або 'debt_given', у яких due_datetime МЕНШЕ за поточний час]\n• [Прострочена задача] (прострочено на Х днів)\n\n💰 <b>За останні 7 днів:</b>\n[Підрахуй суму витрат типу 'expense']\n• Витрати: [Сума] [Валюта]\n\n<b>Рекомендація:</b>\n[Сформулюй ОДИН головний пріоритет (Фокус дня) на основі відкритих задач та зустрічей. Наприклад: \"Сьогодні варто закрити прострочене завдання та підготуватися до зустрічі о 15:00.\"]\n\nДані подій:\n{{ JSON.stringify($json) }}"
+          }
+        },
+        "id": "75b15a75-8fbb-4c64-b888-1bd42b131390",
+        "name": "Generate Report LLM",
+        "type": "@n8n/n8n-nodes-langchain.agent",
+        "typeVersion": 1.7,
+        "position": [
+          27328,
+          24160
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: String($('Deduplicate Users').item.json.telegram_chat_id), text: $json.output, parse_mode: 'HTML' }) }}",
+          "options": {}
+        },
+        "id": "9c80020e-a76d-43b4-adf4-b767c796767b",
+        "name": "Send Daily Report",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27584,
+          24160
+        ]
+      },
+      {
+        "parameters": {
+          "dataType": "string",
+          "value1": "={{ $json.text }}",
+          "rules": {
+            "rules": [
+              {
+                "value2": "📋 Завдання"
+              },
+              {
+                "value2": "📅 Календар"
+              },
+              {
+                "value2": "💰 Фінанси"
+              },
+              {
+                "value2": "📊 Звіт"
+              },
+              {
+                "operation": "regex",
+                "value2": "^(⬅️ Назад|🏠 Головне меню|/start)$"
+              },
+              {
+                "value2": "📂 Активні задачі"
+              }
+            ]
+          },
+          "fallbackOutput": 6
+        },
+        "id": "dd85c5f2-1d37-483e-882f-7847fe99fa97",
+        "name": "Menu Switch",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 1,
+        "position": [
+          27696,
+          22352
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '📋 <b>Розділ: Завдання</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"➕ Додати задачу\"}], [{\"text\": \"📂 Активні задачі\"}, {\"text\": \"✅ Виконані\"}], [{\"text\": \"🔥 Пріоритетні\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+          "options": {}
+        },
+        "id": "0d3d81af-f295-417d-ab61-259bc4c8fd26",
+        "name": "Send Tasks Menu",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          28352,
+          22096
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '📅 <b>Розділ: Календар</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"📆 Сьогодні\"}, {\"text\": \"📅 Завтра\"}], [{\"text\": \"🗓 Тиждень\"}], [{\"text\": \"➕ Нова подія\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+          "options": {}
+        },
+        "id": "208da9a2-fdb7-47e0-a6c6-1aa1bf6f4a48",
+        "name": "Send Calendar Menu",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          28352,
+          22288
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '💰 <b>Розділ: Фінанси</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"➕ Додати витрату\"}], [{\"text\": \"📈 Статистика\"}], [{\"text\": \"💵 За сьогодні\"}, {\"text\": \"📆 За місяць\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+          "options": {}
+        },
+        "id": "2c82ec15-a80f-4f72-8597-2b3e0414358f",
+        "name": "Send Finance Menu",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          28352,
+          22496
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '📊 <b>Розділ: Звіти</b>\\nОберіть дію:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"🌅 Ранковий звіт\"}], [{\"text\": \"📅 Тижневий звіт\"}], [{\"text\": \"💰 Фінансовий звіт\"}, {\"text\": \"🎯 Продуктивність\"}], [{\"text\": \"⬅️ Назад\"}]], resize_keyboard: true } }) }}",
+          "options": {}
+        },
+        "id": "fc09875c-607c-44c7-affc-9b96970f7893",
+        "name": "Send Reports Menu",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          28352,
+          22688
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: '🏠 <b>Головне меню</b>\\nОберіть розділ:', parse_mode: 'HTML', reply_markup: { keyboard: [[{\"text\": \"🏠 Головне меню\"}, {\"text\": \"📊 Звіт\"}], [{\"text\": \"📋 Завдання\"}], [{\"text\": \"📅 Календар\"}], [{\"text\": \"💰 Фінанси\"}], [{\"text\": \"📊 Дешборд\", \"web_app\": {\"url\": \"={{ $vars.DASHBOARD_URL || 'https://dashboard.n8n-accaisona.site' }}\"}}]], resize_keyboard: true } }) }}",
+          "options": {}
+        },
+        "id": "b10330dc-8aba-410f-9ded-9efef48f4d8b",
+        "name": "Send Main Menu",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27472,
+          23776
+        ]
+      },
+      {
+        "parameters": {
+          "dataType": "string",
+          "value1": "={{ Object.keys($json).includes('callback_query') ? 'callback' : 'message' }}",
+          "rules": {
+            "rules": [
+              {
+                "value2": "message"
+              },
+              {
+                "value2": "callback"
+              }
+            ]
+          }
+        },
+        "id": "0025c019-8f09-4ed9-a1f2-1cb043dd5121",
+        "name": "Event Type Switch",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 1,
+        "position": [
+          26016,
+          22896
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "\nconst cb = $('Telegram Trigger').item.json.callback_query;\nif (!cb) return [];\nconst data = cb.data.split(':'); // e.g. \"done:uuid\"\nreturn [{\n  json: {\n    callback_id: cb.id,\n    message_id: cb.message.message_id,\n    chat_id: cb.message.chat.id,\n    action: data[0],\n    event_id: data[1],\n    original_text: cb.message.text\n  }\n}];\n"
+        },
+        "id": "c4304b9b-3ca0-4197-a32c-2429909a6481",
+        "name": "Parse Callback",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          26336,
+          23408
+        ]
+      },
+      {
+        "parameters": {
+          "dataType": "string",
+          "value1": "={{ $json.action }}",
+          "rules": {
+            "rules": [
+              {
+                "value2": "tom"
+              }
+            ]
+          }
+        },
+        "id": "c7c806d1-ada5-4752-81a1-838d0aadb4d6",
+        "name": "Callback Action Router",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 1,
+        "position": [
+          26528,
+          23376
+        ]
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.event_id}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer {{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "{\"status\": \"done\"}",
+          "options": {}
+        },
+        "id": "9134f246-d2a4-472e-8273-1ff67720c862",
+        "name": "DB Mark Done",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26912,
+          23280
+        ]
+      },
+      {
+        "parameters": {
+          "method": "PATCH",
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?id=eq.{{$json.event_id}}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer {{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ due_datetime: new Date(Date.now() + 86400000).toISOString() }) }}",
+          "options": {}
+        },
+        "id": "310a5f4e-93b3-4a26-b323-2d4d1e8a6cc3",
+        "name": "DB Postpone Tomorrow",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          26912,
+          23488
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/answerCallbackQuery",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ callback_query_id: $('Parse Callback').item.json.callback_id, text: 'Готово!' }) }}",
+          "options": {}
+        },
+        "id": "cc8e03c7-96c7-4c3d-a184-a50199cc9ad1",
+        "name": "Answer Callback",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27344,
+          23376
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/editMessageText",
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Parse Callback').item.json.chat_id, message_id: $('Parse Callback').item.json.message_id, text: $('Parse Callback').item.json.action === 'done' ? '✅ ' + $('Parse Callback').item.json.original_text : '⏰ Перенесено:\\n' + $('Parse Callback').item.json.original_text, parse_mode: 'HTML' }) }}",
+          "options": {}
+        },
+        "id": "e1d25db9-5a0e-4bf9-ab23-fa5680b14361",
+        "name": "Edit Message",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27536,
+          23376
+        ]
+      },
+      {
+        "parameters": {
+          "url": "={{$vars.SUPABASE_URL}}/rest/v1/events?type=eq.task&status=eq.open&telegram_chat_id=eq.{{$('Telegram Trigger').item.json.message.chat.id}}&select=id,title,due_datetime&order=created_at.desc",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "apikey",
+                "value": "={{$vars.SUPABASE_KEY}}"
+              },
+              {
+                "name": "Authorization",
+                "value": "Bearer {{$vars.SUPABASE_KEY}}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "a095aecb-304e-4f7c-ac4f-a7d42d723ec0",
+        "name": "DB Get Active Tasks",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27072,
+          23968
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "\nconst tasks = $input.all()[0].json;\nif (!tasks || tasks.length === 0) {\n  return [{ json: { text: \"🎉 У вас немає відкритих задач!\", inline_keyboard: [] } }];\n}\n\nlet text = \"📋 <b>Ваші активні задачі:</b>\\n\\n\";\nconst keyboard = [];\n\ntasks.forEach((task, index) => {\n  const num = index + 1;\n  text += `${num}. ${task.title}\\n`;\n  keyboard.push([\n    { text: `✅ Виконати (${num})`, callback_data: `done:${task.id}` },\n    { text: `⏰ Завтра`, callback_data: `tom:${task.id}` }\n  ]);\n});\n\nreturn [{ json: { text: text, inline_keyboard: keyboard } }];\n"
+        },
+        "id": "2b5e080b-848a-4b44-888f-c0d6516dd73e",
+        "name": "Format Interactive List",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          27264,
+          23968
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=https://api.telegram.org/bot{{$vars.TELEGRAM_BOT_TOKEN}}/sendMessage",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify({ chat_id: $('Telegram Trigger').item.json.message.chat.id, text: $json.text, parse_mode: 'HTML', reply_markup: { inline_keyboard: $json.inline_keyboard } }) }}",
+          "options": {}
+        },
+        "id": "50909dca-f357-4dca-a511-40171489486b",
+        "name": "Send Interactive Tasks",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.1,
+        "position": [
+          27472,
+          23968
+        ]
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "ebe4a0bb-6bcc-4d8e-8d3d-c993bc49530c",
+                "name": "message.chat.id",
+                "value": 6310199418,
+                "type": "number"
+              },
+              {
+                "id": "11498039-5e41-4eb0-8b35-3fd808d71aa6",
+                "name": "",
+                "value": "",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          25808,
+          22928
+        ],
+        "id": "3f21faf1-e87c-4bfd-9ec9-ce42f8977f41",
+        "name": "Edit Fields"
+      }
+    ],
+    "connections": {
+      "Telegram Trigger": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Log Interaction": {
+        "main": [
+          [
+            {
+              "node": "Get Interaction Count",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Interaction Count": {
+        "main": [
+          [
+            {
+              "node": "Check Rate Limit",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Rate Limit": {
+        "main": [
+          [
+            {
+              "node": "Send Rate Limit Message",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "Download File",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Set Text",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download File": {
+        "main": [
+          [
+            {
+              "node": "Local Whisper",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Local Whisper": {
+        "main": [
+          [
+            {
+              "node": "Set Transcript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Transcript": {
+        "main": [
+          [
+            {
+              "node": "Rule Classifier",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Set Text": {
+        "main": [
+          [
+            {
+              "node": "Menu Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Rule Classifier": {
+        "main": [
+          [
+            {
+              "node": "Hybrid Router Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Hybrid Router Switch": {
+        "main": [
+          [
+            {
+              "node": "Intent Router",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Task Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Search Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Chat Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Expense Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Calendar Agent Main",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Intent Router": {
+        "main": [
+          [
+            {
+              "node": "LLM Route Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "LLM Route Switch": {
+        "main": [
+          [
+            {
+              "node": "Task Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Search Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Chat Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Expense Agent",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Calendar Agent Main",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calendar Agent Main": {
+        "main": [
+          [
+            {
+              "node": "Response + Mini App",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Expense Agent": {
+        "main": [
+          [
+            {
+              "node": "Response + Mini App",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Task Agent": {
+        "main": [
+          [
+            {
+              "node": "Response + Mini App",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Agent": {
+        "main": [
+          [
+            {
+              "node": "Response + Mini App",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat Agent": {
+        "main": [
+          [
+            {
+              "node": "Response + Mini App",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Fast Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Intent Router",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Calendar Agent Main",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Task Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Search Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Chat Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            },
+            {
+              "node": "Generate Report LLM",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Smart Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Expense Agent",
+              "type": "ai_languageModel",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calendar Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Calendar Agent Main",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Expense Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Expense Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Task Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Task Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Search Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Chat Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Chat Agent",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Save Event": {
+        "ai_tool": [
+          [
+            {
+              "node": "Expense Agent",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Task Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Query Events": {
+        "ai_tool": [
+          [
+            {
+              "node": "Expense Agent",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Task Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calendar Agent": {
+        "ai_tool": [
+          [
+            {
+              "node": "Expense Agent",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Task Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calculator": {
+        "ai_tool": [
+          [
+            {
+              "node": "Expense Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Tavily": {
+        "ai_tool": [
+          [
+            {
+              "node": "Search Agent",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When Executed by Another Workflow": {
+        "main": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Events": {
+        "ai_tool": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Calendar Agent Main",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Event": {
+        "ai_tool": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Calendar Agent Main",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create Event with Attendee": {
+        "ai_tool": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Calendar Agent Main",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Update Event": {
+        "ai_tool": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Calendar Agent Main",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Delete Event": {
+        "ai_tool": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "ai_tool",
+              "index": 0
+            },
+            {
+              "node": "Calendar Agent Main",
+              "type": "ai_tool",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calendar Agent1": {
+        "main": [
+          [
+            {
+              "node": "Success",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Try Again",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Simple Memory": {
+        "ai_memory": [
+          [
+            {
+              "node": "Calendar Agent1",
+              "type": "ai_memory",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cron Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get Due Reminders",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Due Reminders": {
+        "main": [
+          [
+            {
+              "node": "Send Telegram Reminder",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Telegram Reminder": {
+        "main": [
+          [
+            {
+              "node": "Mark Reminder Sent",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "node": "Check Chat ID",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Check Chat ID": {
+        "main": [
+          [
+            {
+              "node": "Send Error Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cron Daily Report": {
+        "main": [
+          [
+            {
+              "node": "Get Active Users",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get Active Users": {
+        "main": [
+          [
+            {
+              "node": "Deduplicate Users",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Deduplicate Users": {
+        "main": [
+          [
+            {
+              "node": "Get User Events Context",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get User Events Context": {
+        "main": [
+          [
+            {
+              "node": "Generate Report LLM",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Generate Report LLM": {
+        "main": [
+          [
+            {
+              "node": "Send Daily Report",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Event Type Switch": {
+        "main": [
+          [
+            {
+              "node": "Log Interaction",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Parse Callback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Parse Callback": {
+        "main": [
+          [
+            {
+              "node": "Callback Action Router",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Callback Action Router": {
+        "main": [
+          [
+            {
+              "node": "DB Mark Done",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "DB Postpone Tomorrow",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DB Mark Done": {
+        "main": [
+          [
+            {
+              "node": "Answer Callback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DB Postpone Tomorrow": {
+        "main": [
+          [
+            {
+              "node": "Answer Callback",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Answer Callback": {
+        "main": [
+          [
+            {
+              "node": "Edit Message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Menu Switch": {
+        "main": [
+          [
+            {
+              "node": "Send Tasks Menu",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send Calendar Menu",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send Finance Menu",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Send Reports Menu",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "DB Get Active Tasks": {
+        "main": [
+          [
+            {
+              "node": "Format Interactive List",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Format Interactive List": {
+        "main": [
+          [
+            {
+              "node": "Send Interactive Tasks",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Event Type Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+      "templateCredsSetupCompleted": true
+    },
+    "nodeGroups": [],
+    "pinData": {},
+    "versionId": "dae2a6a5-b783-4107-847f-e87f8590fe66",
+    "activeVersionId": null,
+    "versionCounter": 576,
+    "triggerCount": 1,
+    "sourceWorkflowId": null,
+    "tags": [],
+    "shared": [
+      {
+        "updatedAt": "2026-06-20T13:07:43.848Z",
+        "createdAt": "2026-06-20T13:07:43.848Z",
+        "role": "workflow:owner",
+        "workflowId": "onmJT10ta0lra5ry",
+        "projectId": "VPCosL6rnhCgCiR5",
+        "project": {
+          "updatedAt": "2026-06-20T12:50:10.640Z",
+          "createdAt": "2026-06-19T20:01:37.419Z",
+          "id": "VPCosL6rnhCgCiR5",
+          "name": "my profile <my.profile2403@gmail.com>",
+          "type": "personal",
+          "icon": null,
+          "description": null,
+          "customTelemetryTags": [],
+          "creatorId": "3326ead5-2b07-43bb-9946-c25a029ac133"
+        }
+      }
+    ],
+    "versionMetadata": {
+      "name": null,
+      "description": null
+    }
+  }
+]
