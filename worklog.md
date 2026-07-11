@@ -145,3 +145,29 @@ Stage Summary:
 - Root cause of "bot not responding" identified as Gemini free-tier daily quota exhaustion, not a workflow bug
 - `Query Events` confirmed still broken (legacy `$fromAI` + missing header auth) — open follow-up
 - OmniRoute AI gateway deployed and reachable, ready for the user to connect providers
+
+---
+Task ID: 7
+Agent: Claude Code
+Task: Fix expense-saving, expense-reporting, and family-scope bugs; add visible error diagnostics; explore/roll back LLM quota mitigations
+Completed: 2026-07-11 21:30 CEST — first fully working end-to-end test (expense saved, correctly totaled, family-wide) 🎉
+
+Work Log:
+- Investigated OmniRoute as a fix for Gemini's 20/day free-tier wall. Confirmed it natively supports Anthropic/Claude (found the provider registry in the container listing Sonnet 5, Opus 4.8, Haiku 4.5) but it needs a real paid Anthropic API key, not a Claude Code session. `provider_connections`/`api_keys` tables are still empty — not used in the end.
+- Attempted n8n's native Agent "Fallback Model" (Gemini primary → OpenRouter free secondary) across all 10 agent nodes. Discovered this requires Agent typeVersion ≥2, but every agent in the live workflow was on `AgentV1` (1.6/1.7). Bumped all 10 to `3.1` + wired the fallback — this broke the live bot: AgentV3's execution engine resolves connected sub-node expressions differently, and `Expense Memory`'s `sessionKey` expression threw `"Key parameter is empty"`, so the agent produced no output and Telegram went silent. Rolled back all 10 agents to their original V1 typeVersion, fallback removed.
+- Landed on a simpler, lower-risk approach instead: gave each of the 10 agents its own dedicated `lmChatGoogleGemini` node (previously 9 of them shared one `Fast Chat Model` instance, 1 shared `Smart Chat Model`) — `gemini-2.5-flash-lite` for 9 agents. `Expense Agent` specifically was reverted to full `gemini-2.5-flash` after flash-lite twice failed to supply the required `title` argument on a tool call (Zod schema validation error) on a message that worked fine on regular flash — money-handling agent needs the more reliable model.
+- Root-caused and fixed the real reason expenses weren't saving at all: `Save Event` sent a JSON field named `record_type`, but the actual Postgres column is `type` — every save has been 400-ing since the original same-day fix in Task 6, unrelated to any quota/model issue. Verified the fix with a direct `curl` against Supabase before touching the live workflow.
+- Rebuilt `Query Events` (previously flagged broken in Task 6): replaced the dead `$fromAI(...)` expression and headers that had no value at all with n8n's `sendQuery`/`specifyQuery: "keypair"` mechanism (confirmed via `ToolHttpRequest/utils.js` source that query-string params support the same placeholder system as headers/body) — `type`/`status`/`project` filters now work via `modelOptional` PostgREST `eq.<value>` placeholders, with headers explicitly `fieldValue`.
+- Found the Fінанси menu ("За сьогодні"/"За місяць"/"Статистика") was filtering/sorting on `event_datetime`, which is `NULL` unless a date is explicitly stated — meaning almost every casually-logged expense was invisible to those buttons even though correctly saved (visible in the dashboard, which reads every row). Fixed all three queries to use `created_at` instead.
+- Found a second, separate cause of "dashboard sees it, bot doesn't": the same three queries filtered `telegram_chat_id=eq.<sender's own id>`, so family members never saw each other's expenses in the bot (the dashboard aggregates the whole family via `ALLOWED_TELEGRAM_IDS`). At the user's request, changed the filter to `telegram_chat_id=in.(6310199418,916336672)` so the bot's Finance totals match the dashboard's family-wide view.
+- Found that 5 conversational agents (`Chat Agent`, `Expense Agent`, `Task Agent`, `Calendar Agent Main`, `Search Agent`) had `onError: continueErrorOutput` wired to nowhere — any tool-schema validation failure produced total silence in Telegram, without even the generic Error Trigger catching it. Added a shared `Format Agent Error` node that surfaces `⚠️ Помилка в кроці «<node>»: <message>` into the existing response path instead.
+- Verified everything end-to-end via real Telegram messages from two different family members: expense saved, `type` correct, "За сьогодні" total correctly summed across both users (1320 + 310 + 320 + 350 = 2300 CZK).
+- Every change deployed via the established `export:workflow` → patch JSON → `import:workflow` → `publish:workflow` → container restart cycle; user kept the n8n editor tab closed/idle throughout to avoid the known autosave race.
+
+Stage Summary:
+- Expense/task saving actually persists correctly now (`record_type` → `type` was the real, previously-undiagnosed root cause)
+- `Query Events` fixed for real this time (query-string keypair placeholders, not the dead `$fromAI` mechanism)
+- Bot's Finance menu now matches the dashboard: correct dates (`created_at`) and family-wide totals (`in.(...)` chat_id list)
+- Silent agent failures now produce a diagnostic Telegram message naming the failing node
+- AgentV1→V3 upgrade + native Fallback Model documented as unsafe without a full sub-node expression audit first — do not retry casually
+- OmniRoute remains deployed but fully unconfigured; per-agent dedicated Gemini nodes used instead for now
